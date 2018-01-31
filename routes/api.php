@@ -17,5 +17,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/{db_name}/{table_name}', 'ApiController@getManyData');
-Route::get('/{db_name}/{table_name}/{id}', 'ApiController@getSingleData');
+Route::group(['prefix' => '/{db_name}'], function () {
+    Route::get('/{table_name}', 'ApiController@getManyData');
+    Route::get('/{table_name}/{id}', 'ApiController@getSingleData');
+    Route::post('/{table_name}', 'ApiController@postData');
+});

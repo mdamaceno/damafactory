@@ -79,4 +79,9 @@ class ResultBuilder
 
         return $query;
     }
+
+    public function buildCreate(Request $request, $query, $tableName)
+    {
+        dd($request);
+    }
 }

@@ -15,10 +15,19 @@ class ApiController extends Controller
         $this->resultBuilder = new ResultBuilder();
     }
 
+    private function database($dbName)
+    {
+        $database = \DB::connection(env('DB_CONNECTION'))
+            ->table('dbs')
+            ->where('label', $dbName)
+            ->first();
+
+        return $database;
+    }
+
     public function getManyData($dbName, $tableName)
     {
-        $database = \DB::table('dbs')->where('label', $dbName)->first();
-
+        $database = $this->database($dbName);
         $this->connDB->setDatabase($database->driver, $database);
         $query = \DB::connection($database->driver)->table($tableName);
 
@@ -40,8 +49,7 @@ class ApiController extends Controller
 
     public function getSingleData($dbName, $tableName, $id)
     {
-        $database = \DB::table('dbs')->where('label', $dbName)->first();
-
+        $database = $this->database($dbName);
         $this->connDB->setDatabase($database->driver, $database);
         $query = \DB::connection($database->driver)->table($tableName);
 
@@ -54,5 +62,10 @@ class ApiController extends Controller
         return response()->json([
             'data' => Helpers::array_utf8_encode($data),
         ]);
+    }
+
+    public function postData($dbName, $tableName)
+    {
+        dd($dbName);
     }
 }
