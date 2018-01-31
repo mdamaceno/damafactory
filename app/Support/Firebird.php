@@ -37,7 +37,8 @@ class Firebird
         $arr = [];
 
         foreach ($primaryKeys as $pk) {
-            if (in_array($pk, $this->getGenerators())) {
+          if ($this->isGenerator($pk)) {
+            // if (in_array($pk, $this->getGenerators())) {
                 $sql = "SELECT GEN_ID( " . $pk . ", 0 ) AS ID FROM RDB\$DATABASE;";
                 
                 $result = \DB::connection('firebird')
@@ -64,5 +65,15 @@ class Firebird
         }
 
         return $arr;
+    }
+
+    public function isGenerator($gk)
+    {
+        $arr = [];
+        $sql = "SELECT COUNT(*) IS_GENERATOR FROM RDB\$GENERATORS WHERE RDB\$GENERATOR_NAME = '{$gk}'";
+        $result = \DB::connection('firebird')
+              ->select(\DB::raw($sql));
+
+        return (bool) $result[0]->IS_GENERATOR;
     }
 }
