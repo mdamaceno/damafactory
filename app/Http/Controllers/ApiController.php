@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Support\Helpers;
+use App\Support\ConnectDatabase;
 
 class ApiController extends Controller
 {
-    public function firebird($tableName)
+    public function __construct()
     {
-        $fields = '*';
+        $this->connDB = new ConnectDatabase();
+    }
+
+    public function getData($dbName, $tableName)
+    {
+        $database = \DB::table('dbs')->where('label', $dbName)->first();
+
+        $this->connDB->setDatabase($database->driver, $database);
+
         $limit = 10;
         $page = 0;
         $query = \DB::table($tableName);
@@ -42,7 +51,7 @@ class ApiController extends Controller
         if (request()->has('page')) {
             $page = request()->get('page') - 1;
 
-            if (request()->get('page') == 0) {
+            if (request()->get('page') <= 0) {
                 $page = 0;
             }
         }
@@ -51,6 +60,8 @@ class ApiController extends Controller
           ->limit($limit)
           ->offset($page)
           ->get();
+
+        $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
             'data' => Helpers::array_utf8_encode($result),

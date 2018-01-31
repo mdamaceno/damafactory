@@ -17,4 +17,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/firebird/{table_name}', 'ApiController@firebird');
+Route::get('/{db_name}/{table_name}', 'ApiController@getData');
