@@ -4,67 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Support\Helpers;
 use App\Support\ConnectDatabase;
+use App\Support\Firebird;
+use App\Support\ResultBuilder;
 
 class ApiController extends Controller
 {
     public function __construct()
     {
         $this->connDB = new ConnectDatabase();
+        $this->resultBuilder = new ResultBuilder();
     }
 
-    public function getData($dbName, $tableName)
+    public function getManyData($dbName, $tableName)
     {
         $database = \DB::table('dbs')->where('label', $dbName)->first();
 
         $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
 
-        $limit = 10;
-        $page = 0;
-        $query = \DB::table($tableName);
+        $result = $this->resultBuilder
+            ->buildMany(request(), $query, $tableName)
+            ->get();
 
-        if (request()->has('fields')) {
-            foreach (explode(',', request()->get('fields')[$tableName]) as $f) {
-                $query->addSelect($f);
-            }
+        $arr = [];
+        foreach ($result as $r) {
+            array_push($arr, get_object_vars($r));
         }
-
-        if (request()->has('sort')) {
-            $orderbys = explode(',', request()->get('sort'));
-
-            foreach ($orderbys as $key => $ob) {
-                if ($ob[0] === '-') {
-                    $query->orderBy($tableName . '.' . substr($ob, 1), 'DESC');
-                } else {
-                    $query->orderBy($tableName . '.' . $ob, 'ASC');
-                }
-            }
-        }
-
-        if (request()->has('limit')) {
-            $limit = request()->get('limit');
-
-            if ($limit < 1) {
-                $limit = 1;
-            }
-        }
-
-        if (request()->has('page')) {
-            $page = request()->get('page') - 1;
-
-            if (request()->get('page') <= 0) {
-                $page = 0;
-            }
-        }
-
-        $result = $query
-          ->limit($limit)
-          ->offset($page)
-          ->get();
 
         $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
-            'data' => Helpers::array_utf8_encode($result),
+            'data' => Helpers::array_utf8_encode($arr),
+        ]);
+    }
+
+    public function getSingleData($dbName, $tableName, $id)
+    {
+        $database = \DB::table('dbs')->where('label', $dbName)->first();
+
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $result = $this->resultBuilder
+            ->buildSingle(request(), $query, $tableName, $id);
+
+        $data = (array) $result->first();
+        $this->connDB->unsetDatabase($database->driver);
+
+        return response()->json([
+            'data' => Helpers::array_utf8_encode($data),
         ]);
     }
 }

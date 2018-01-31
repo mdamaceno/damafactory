@@ -16,6 +16,25 @@ class Helpers
         return $ret;
     }
 
+    public static function utf8_encode_deep(&$input)
+    {
+        if (is_string($input)) {
+            $input = utf8_encode($input);
+        } else if (is_array($input)) {
+            foreach ($input as &$value) {
+                self::utf8_encode_deep($value);
+            }
+
+            unset($value);
+        } else if (is_object($input)) {
+            $vars = array_keys(get_object_vars($input));
+
+            foreach ($vars as $var) {
+                self::utf8_encode_deep($input->$var);
+            }
+        }
+    }
+
     public static function array_change_key_case_recursive($arr, $case=CASE_LOWER)
     {
         return array_map(function($item)use($case){
