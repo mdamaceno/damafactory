@@ -66,6 +66,11 @@ class ApiController extends Controller
 
     public function postData($dbName, $tableName)
     {
-        dd($dbName);
+        $database = $this->database($dbName);
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $this->resultBuilder
+            ->buildCreate(request(), $query, $tableName);
     }
 }

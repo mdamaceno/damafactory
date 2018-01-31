@@ -30,4 +30,39 @@ class Firebird
 
         return $arr;
     }
+
+    public function getNextId($tableName)
+    {
+        $primaryKeys = $this->getPrimaryKey($tableName);
+        $arr = [];
+
+        foreach ($primaryKeys as $pk) {
+            if (in_array($pk, $this->getGenerators())) {
+                $sql = "SELECT GEN_ID( " . $pk . ", 0 ) AS ID FROM RDB\$DATABASE;";
+                
+                $result = \DB::connection('firebird')
+                  ->select(\DB::raw($sql));
+
+                foreach ($result as $r) {
+                    $arr[$pk] = $r->ID + 1;
+                }
+            }
+        }
+
+        return $arr;
+    }
+
+    public function getGenerators()
+    {
+        $arr = [];
+        $sql = "SELECT RDB\$GENERATOR_NAME AS SEQUENCE_NAME FROM RDB\$GENERATORS";
+        $result = \DB::connection('firebird')
+              ->select(\DB::raw($sql));
+
+        foreach ($result as $r) {
+            array_push($arr, trim(get_object_vars($r)['SEQUENCE_NAME']));
+        }
+
+        return $arr;
+    }
 }

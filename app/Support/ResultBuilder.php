@@ -82,6 +82,6 @@ class ResultBuilder
 
     public function buildCreate(Request $request, $query, $tableName)
     {
-        dd($request);
+        dd($this->firebird->getNextId($tableName));
     }
 }
