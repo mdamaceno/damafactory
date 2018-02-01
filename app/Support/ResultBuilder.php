@@ -128,6 +128,11 @@ class ResultBuilder
         return $arr;
     }
 
+    public function buildFilteringUpdate(Request $request, $query, $tableName)
+    {
+        dd('here');
+    }
+
     private function getPrimaryKeyDatabase($query, $tableName)
     {
         if ($query->getConnection()->getName() === 'firebird') {

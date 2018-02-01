@@ -22,4 +22,5 @@ Route::group(['prefix' => '/{db_name}'], function () {
     Route::get('/{table_name}/{id}', 'ApiController@getSingleData');
     Route::post('/{table_name}', 'ApiController@postData');
     Route::match(['put', 'patch'], '/{table_name}/{id}', 'ApiController@updateData');
+    Route::match(['put', 'patch'], '/{table_name}', 'ApiController@updateFilteringData');
 });

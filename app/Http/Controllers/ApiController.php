@@ -135,4 +135,14 @@ class ApiController extends Controller
 
         return new DatabaseException('update');
     }
+
+    public function updateFilteringData($dbName, $tableName)
+    {
+        $database = $this->database($dbName);
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $result = $this->resultBuilder
+            ->buildFilteringUpdate(request(), $query, $tableName);
+    }
 }
