@@ -6,6 +6,7 @@ use App\Support\Helpers;
 use App\Support\ConnectDatabase;
 use App\Support\Firebird;
 use App\Support\ResultBuilder;
+use App\Exceptions\DatabaseException;
 use ForceUTF8\Encoding;
 
 class ApiController extends Controller
@@ -71,7 +72,39 @@ class ApiController extends Controller
         $this->connDB->setDatabase($database->driver, $database);
         $query = \DB::connection($database->driver)->table($tableName);
 
-        $this->resultBuilder
+        $result = $this->resultBuilder
             ->buildCreate(request(), $query, $tableName);
+
+        $id = $result['id'];
+        $paramsToSave = $result['paramsToSave'];
+
+        if ($query->insert($paramsToSave)) {
+            if (count($id) > 1) {
+                $this->connDB->unsetDatabase($database->driver);
+
+                return response()->json([
+                    'data' => [
+                        'sucesss' => true,
+                        'last_id' => $id,
+                    ],
+                ]);
+            }
+
+            $columnId = array_keys($id)[0];
+            $query = \DB::connection($database->driver)->table($tableName);
+            $lastInsert = $query
+                ->where($columnId, $id[$columnId])
+                ->first();
+
+            $this->connDB->unsetDatabase($database->driver);
+
+            return response()->json([
+                'data' => Encoding::toUTF8($lastInsert),
+            ]);
+        }
+
+        $this->connDB->unsetDatabase($database->driver);
+
+        return new DatabaseException('insert');
     }
 }

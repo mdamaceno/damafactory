@@ -48,7 +48,9 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($e instanceof NoPrimaryKeyException || $e instanceof ManyPrimaryKeysException) {
+        if ($e instanceof NoPrimaryKeyException
+            || $e instanceof ManyPrimaryKeysException
+            || $e instanceof DatabaseException ) {
             $errorBag = [
                 'message' => $e->getMessage(),
                 'status' => 500,
