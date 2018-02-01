@@ -10,12 +10,6 @@ use App\Exceptions\ManyPrimaryKeysException;
 
 class ResultBuilder
 {
-    public function __construct()
-    {
-        $this->firebird = new Firebird();
-        $this->mysql = new MySQL();
-    }
-
     public function buildMany(Request $request, $query, $tableName)
     {
         $limit = 10;
@@ -74,7 +68,8 @@ class ResultBuilder
         }
 
         if ($query->getConnection()->getName() === 'firebird') {
-            $primaryKeys = $this->firebird->getPrimaryKey($tableName);
+            $firebird = new Firebird();
+            $primaryKeys = $firebird->getPrimaryKey($tableName);
 
             if (count($primaryKeys) === 0) {
                 throw new NoPrimaryKeyException();
@@ -86,7 +81,8 @@ class ResultBuilder
         }
 
         if ($query->getConnection()->getName() === 'mysql') {
-            $primaryKeys = $this->mysql->getPrimaryKey($tableName);
+            $mysql = new MySQL();
+            $primaryKeys = $mysql->getPrimaryKey($tableName);
 
             if (count($primaryKeys) === 0) {
                 throw new NoPrimaryKeyException();
