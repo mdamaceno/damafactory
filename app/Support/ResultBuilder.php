@@ -100,14 +100,29 @@ class ResultBuilder
 
     public function buildCreate(Request $request, $query, $tableName)
     {
+        $arr = [
+            'id' => [],
+            'paramsToSave' => [],
+        ];
+
+        foreach ($request->all() as $key => $r) {
+            $arr['paramsToSave'][$key] = $r;
+        }
+
         if ($query->getConnection()->getName() === 'firebird') {
             $firebird = new Firebird();
-            dd($firebird->getNextId($tableName));
+
+            foreach ($firebird->getNextId($tableName) as $key => $id) {
+                $arr['paramsToSave'][$key] = $id;
+                $arr['id'][$key] = $id;
+            }
         }
 
         if ($query->getConnection()->getName() === 'mysql') {
             $mysql = new MySQL();
             dd($request->all());
         }
+
+        return $arr;
     }
 }
