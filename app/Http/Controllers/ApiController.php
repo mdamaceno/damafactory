@@ -79,7 +79,7 @@ class ApiController extends Controller
         $paramsToSave = $result['paramsToSave'];
 
         if ($query->insert($paramsToSave)) {
-            if (count($id) > 1) {
+            if (count($id) !== 1) {
                 $this->connDB->unsetDatabase($database->driver);
 
                 return response()->json([
