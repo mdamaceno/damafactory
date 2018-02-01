@@ -100,6 +100,14 @@ class ResultBuilder
 
     public function buildCreate(Request $request, $query, $tableName)
     {
-        dd($this->firebird->getNextId($tableName));
+        if ($query->getConnection()->getName() === 'firebird') {
+            $firebird = new Firebird();
+            dd($firebird->getNextId($tableName));
+        }
+
+        if ($query->getConnection()->getName() === 'mysql') {
+            $mysql = new MySQL();
+            dd($request->all());
+        }
     }
 }
