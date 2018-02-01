@@ -15,14 +15,14 @@ class ResultBuilder
         $limit = 10;
         $page = 0;
 
-        if (request()->has('fields')) {
-            foreach (explode(',', request()->get('fields')[$tableName]) as $f) {
+        if ($request->has('fields')) {
+            foreach (explode(',', $request->get('fields')[$tableName]) as $f) {
                 $query->addSelect($f);
             }
         }
 
-        if (request()->has('sort')) {
-            $orderbys = explode(',', request()->get('sort'));
+        if ($request->has('sort')) {
+            $orderbys = explode(',', $request->get('sort'));
 
             foreach ($orderbys as $key => $ob) {
                 if ($ob[0] === '-') {
@@ -33,24 +33,24 @@ class ResultBuilder
             }
         }
 
-        if (request()->has('filter')) {
-            foreach (request()->get('filter') as $key => $f) {
+        if ($request->has('filter')) {
+            foreach ($request->get('filter') as $key => $f) {
                 $query->where($tableName . '.' . $key, $f);
             }
         }
 
-        if (request()->has('limit')) {
-            $limit = request()->get('limit');
+        if ($request->has('limit')) {
+            $limit = $request->get('limit');
 
             if ($limit < 1) {
                 $limit = 1;
             }
         }
 
-        if (request()->has('page')) {
-            $page = request()->get('page') - 1;
+        if ($request->has('page')) {
+            $page = $request->get('page') - 1;
 
-            if (request()->get('page') <= 0) {
+            if ($request->get('page') <= 0) {
                 $page = 0;
             }
         }
@@ -61,8 +61,8 @@ class ResultBuilder
     }
     public function buildSingle(Request $request, $query, $tableName, $id)
     {
-        if (request()->has('fields')) {
-            foreach (explode(',', request()->get('fields')[$tableName]) as $f) {
+        if ($request->has('fields')) {
+            foreach (explode(',', $request->get('fields')[$tableName]) as $f) {
                 $query->addSelect($f);
             }
         }
