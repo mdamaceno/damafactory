@@ -46,8 +46,24 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        return parent::render($request, $exception);
+        if ($e instanceof NoPrimaryKeyException || $e instanceof ManyPrimaryKeysException) {
+            $errorBag = [
+                'message' => $e->getMessage(),
+                'status' => 500,
+            ];
+
+            if (config('app.debug')) {
+                $errorBag['code'] = $e->getCode();
+                $errorBag['file'] = $e->getFile();
+                $errorBag['line'] = $e->getLine();
+                $errorBag['trace'] = $e->getTraceAsString();
+            }
+
+            return response()->json(['error' => $errorBag], 500);
+        }
+
+        return parent::render($request, $e);
     }
 }
