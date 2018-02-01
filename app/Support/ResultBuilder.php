@@ -4,12 +4,16 @@ namespace App\Support;
 
 use Illuminate\Http\Request;
 use App\Support\Firebird;
+use App\Support\MySQL;
+use App\Exceptions\NoPrimaryKeyException;
+use App\Exceptions\ManyPrimaryKeysException;
 
 class ResultBuilder
 {
     public function __construct()
     {
         $this->firebird = new Firebird();
+        $this->mysql = new MySQL();
     }
 
     public function buildMany(Request $request, $query, $tableName)
@@ -72,10 +76,28 @@ class ResultBuilder
         if ($query->getConnection()->getName() === 'firebird') {
             $primaryKeys = $this->firebird->getPrimaryKey($tableName);
 
+            if (count($primaryKeys) === 0) {
+                throw new NoPrimaryKeyException();
+            }
+
             if (count($primaryKeys) > 1) {
-                throw new \Exception('Table has more than one primary key. Use "filter"');
+                throw new ManyPrimaryKeysException();
             }
         }
+
+        if ($query->getConnection()->getName() === 'mysql') {
+            $primaryKeys = $this->mysql->getPrimaryKey($tableName);
+
+            if (count($primaryKeys) === 0) {
+                throw new NoPrimaryKeyException();
+            }
+
+            if (count($primaryKeys) > 1) {
+                throw new ManyPrimaryKeysException();
+            }
+        }
+
+        $query->where($primaryKeys[0], $id);
 
         return $query;
     }
