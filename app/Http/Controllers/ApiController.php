@@ -6,6 +6,7 @@ use App\Support\Helpers;
 use App\Support\ConnectDatabase;
 use App\Support\Firebird;
 use App\Support\ResultBuilder;
+use ForceUTF8\Encoding;
 
 class ApiController extends Controller
 {
@@ -43,7 +44,7 @@ class ApiController extends Controller
         $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
-            'data' => Helpers::array_utf8_encode($arr),
+            'data' => Encoding::toUTF8($arr),
         ]);
     }
 
@@ -60,7 +61,7 @@ class ApiController extends Controller
         $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
-            'data' => Helpers::array_utf8_encode($data),
+            'data' => Encoding::toUTF8($data),
         ]);
     }
 
