@@ -107,4 +107,32 @@ class ApiController extends Controller
 
         return new DatabaseException('insert');
     }
+
+    public function updateData($dbName, $tableName, $id)
+    {
+        $database = $this->database($dbName);
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $result = $this->resultBuilder
+            ->buildUpdate(request(), $query, $tableName, $id);
+
+        $id = $result['id'];
+        $paramsToSave = $result['paramsToSave'];
+
+        $columnId = array_keys($id)[0];
+        if ($query->where($columnId, $id[$columnId])->update($paramsToSave) > 0) {
+            $lastUpdate = $query
+                ->where($columnId, $id[$columnId])
+                ->first();
+
+            $this->connDB->unsetDatabase($database->driver);
+
+            return response()->json([
+                'data' => Encoding::toUTF8($lastUpdate),
+            ]);
+        }
+
+        return new DatabaseException('update');
+    }
 }

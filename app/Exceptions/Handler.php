@@ -48,24 +48,17 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $e)
     {
-        if ($e instanceof NoPrimaryKeyException
-            || $e instanceof ManyPrimaryKeysException
-            || $e instanceof DatabaseException ) {
-            $errorBag = [
-                'message' => $e->getMessage(),
-                'status' => 500,
-            ];
+        $errorBag = [
+            'message' => $e->getMessage(),
+            'status_code' => ($e->getCode() == 0) ? 500 : $e->getCode(),
+        ];
 
-            if (config('app.debug')) {
-                $errorBag['code'] = $e->getCode();
-                $errorBag['file'] = $e->getFile();
-                $errorBag['line'] = $e->getLine();
-                $errorBag['trace'] = $e->getTraceAsString();
-            }
-
-            return response()->json(['error' => $errorBag], 500);
+        if (config('app.debug')) {
+            $errorBag['file'] = $e->getFile();
+            $errorBag['line'] = $e->getLine();
+            $errorBag['trace'] = $e->getTraceAsString();
         }
 
-        return parent::render($request, $e);
+        return response()->json(['error' => $errorBag], $errorBag['status_code']);
     }
 }

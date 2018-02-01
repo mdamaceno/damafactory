@@ -7,6 +7,7 @@ use App\Support\Firebird;
 use App\Support\MySQL;
 use App\Exceptions\NoPrimaryKeyException;
 use App\Exceptions\ManyPrimaryKeysException;
+use App\Exceptions\NotFoundException;
 
 class ResultBuilder
 {
@@ -67,31 +68,7 @@ class ResultBuilder
             }
         }
 
-        if ($query->getConnection()->getName() === 'firebird') {
-            $firebird = new Firebird();
-            $primaryKeys = $firebird->getPrimaryKey($tableName);
-
-            if (count($primaryKeys) === 0) {
-                throw new NoPrimaryKeyException();
-            }
-
-            if (count($primaryKeys) > 1) {
-                throw new ManyPrimaryKeysException();
-            }
-        }
-
-        if ($query->getConnection()->getName() === 'mysql') {
-            $mysql = new MySQL();
-            $primaryKeys = $mysql->getPrimaryKey($tableName);
-
-            if (count($primaryKeys) === 0) {
-                throw new NoPrimaryKeyException();
-            }
-
-            if (count($primaryKeys) > 1) {
-                throw new ManyPrimaryKeysException();
-            }
-        }
+        $primaryKeys = $this->getPrimaryKeyDatabase($query, $tableName);
 
         $query->where($primaryKeys[0], $id);
 
@@ -124,5 +101,53 @@ class ResultBuilder
         }
 
         return $arr;
+    }
+
+    public function buildUpdate(Request $request, $query, $tableName, $id)
+    {
+        $arr = [
+            'id' => [],
+            'paramsToSave' => [],
+        ];
+
+        foreach ($request->all() as $key => $r) {
+            $arr['paramsToSave'][$key] = $r;
+        }
+
+        $primaryKeys = $this->getPrimaryKeyDatabase($query, $tableName);
+        $query = $query->where($primaryKeys[0], $id);
+
+        if ($query->where($primaryKeys[0], $id)->count() < 1) {
+            throw new NotFoundException();
+        }
+
+        foreach ($primaryKeys as $key => $p) {
+            $arr['id'][$p] = $id;
+        }
+
+        return $arr;
+    }
+
+    private function getPrimaryKeyDatabase($query, $tableName)
+    {
+        if ($query->getConnection()->getName() === 'firebird') {
+            $db = new Firebird();
+        }
+
+        if ($query->getConnection()->getName() === 'mysql') {
+            $db = new MySQL();
+        }
+
+        $primaryKeys = $db->getPrimaryKey($tableName);
+
+        if (count($primaryKeys) === 0) {
+            throw new NoPrimaryKeyException();
+        }
+
+        if (count($primaryKeys) > 1) {
+            throw new ManyPrimaryKeysException();
+        }
+
+        return $primaryKeys;
     }
 }
