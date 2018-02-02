@@ -134,7 +134,24 @@ class ResultBuilder
 
     public function buildFilteringUpdate(Request $request, $query, $tableName)
     {
-        dd('here');
+        $arr = [
+            'paramsToSave' => [],
+            'query' => null,
+        ];
+
+        foreach ($request->except('filter') as $key => $r) {
+            $arr['paramsToSave'][$key] = $r;
+        }
+
+        if (!$request->has('filter')) {
+            throw new \Exception("Error Processing Request");
+        }
+
+        foreach ($request->get('filter') as $key => $f) {
+            $arr['query'] = $query->where($tableName . '.' . $key, $f);
+        }
+
+        return $arr;
     }
 
     private function getPrimaryKeyDatabase($query, $tableName)

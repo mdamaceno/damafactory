@@ -144,5 +144,28 @@ class ApiController extends Controller
 
         $result = $this->resultBuilder
             ->buildFilteringUpdate(request(), $query, $tableName);
+
+        $paramsToSave = $result['paramsToSave'];
+        $query = $result['query'];
+
+        $rowsUpdated = $query->update($paramsToSave);
+
+        if ($rowsUpdated > 0) {
+            $this->connDB->unsetDatabase($database->driver);
+
+            return response()->json([
+                'data' => [
+                    'sucesss' => true,
+                    'rows_updated' => $rowsUpdated,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'sucesss' => false,
+                'rows_updated' => 0,
+            ],
+        ]);
     }
 }
