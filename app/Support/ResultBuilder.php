@@ -139,8 +139,21 @@ class ResultBuilder
             'query' => null,
         ];
 
-        foreach ($request->except('filter') as $key => $r) {
-            $arr['paramsToSave'][$key] = $r;
+        if ($query->getConnection()->getName() === 'firebird') {
+            $firebird = new Firebird();
+            $primaryKeys = $firebird->getPrimaryKey($tableName);
+
+            foreach ($request->except('filter') as $key => $r) {
+                if (!in_array($key, $primaryKeys) && !$firebird->isGenerator($key)) {
+                    $arr['paramsToSave'][$key] = $r;
+                }
+            }
+        }
+
+        if ($query->getConnection()->getName() === 'mysql') {
+            foreach ($request->except('filter') as $key => $r) {
+                $arr['paramsToSave'][$key] = $r;
+            }
         }
 
         if (!$request->has('filter')) {

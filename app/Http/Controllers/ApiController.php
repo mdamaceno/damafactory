@@ -148,6 +148,15 @@ class ApiController extends Controller
         $paramsToSave = $result['paramsToSave'];
         $query = $result['query'];
 
+        if (count($paramsToSave) < 1) {
+            return response()->json([
+                'data' => [
+                    'sucesss' => true,
+                    'rows_updated' => 0,
+                ],
+            ]);
+        }
+
         $rowsUpdated = $query->update($paramsToSave);
 
         if ($rowsUpdated > 0) {
