@@ -97,7 +97,11 @@ class ResultBuilder
 
         if ($query->getConnection()->getName() === 'mysql') {
             $mysql = new MySQL();
-            dd($request->all());
+
+            foreach ($mysql->getNextId($tableName) as $key => $id) {
+                $arr['paramsToSave'][$key] = $id;
+                $arr['id'][$key] = $id;
+            }
         }
 
         return $arr;

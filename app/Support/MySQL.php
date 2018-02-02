@@ -21,4 +21,24 @@ class MySQL
 
         return $arr;
     }
+
+    public function getNextId($tableName)
+    {
+        $primaryKeys = $this->getPrimaryKey($tableName);
+        $arr = [];
+
+        $sql = "
+            SELECT AUTO_INCREMENT FROM information_schema.tables
+            WHERE table_name = '" . $tableName . "'
+            AND table_schema = DATABASE();";
+
+        $result = \DB::connection('mysql')
+          ->select(\DB::raw($sql));
+
+        foreach ($primaryKeys as $key => $pk) {
+            $arr[$pk] = $result[0]->AUTO_INCREMENT;
+        }
+
+        return $arr;
+    }
 }

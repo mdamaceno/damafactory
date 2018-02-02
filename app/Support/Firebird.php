@@ -19,7 +19,7 @@ class Firebird
 
         $result = \DB::connection('firebird')
           ->select(\DB::raw($sql));
-        
+
         $arr = [];
 
         if (count($result) > 0) {
@@ -40,7 +40,7 @@ class Firebird
           if ($this->isGenerator($pk)) {
             // if (in_array($pk, $this->getGenerators())) {
                 $sql = "SELECT GEN_ID( " . $pk . ", 0 ) AS ID FROM RDB\$DATABASE;";
-                
+
                 $result = \DB::connection('firebird')
                   ->select(\DB::raw($sql));
 
