@@ -49,11 +49,25 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         $errorBag = [
-            'message' => $e->getMessage(),
-            'status_code' => ($e->getCode() == 0) ? 500 : $e->getCode(),
+            'message' => 'Sorry, something went wrong!',
+            'status_code' => 500,
         ];
 
+        if ($e instanceof NoPrimaryKeyException
+            || $e instanceof ManyPrimaryKeysException) {
+            $errorBag['status_code'] = 400;
+        }
+
+        if ($e instanceof NotFoundException) {
+            $errorBag['status_code'] = 404;
+        }
+
+        if ($e instanceof DatabaseException) {
+            $errorBag['status_code'] = 500;
+        }
+
         if (config('app.debug')) {
+            $errorBag['real_message'] = $e->getMessage();
             $errorBag['file'] = $e->getFile();
             $errorBag['line'] = $e->getLine();
             $errorBag['trace'] = $e->getTraceAsString();
