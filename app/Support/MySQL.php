@@ -41,4 +41,27 @@ class MySQL
 
         return $arr;
     }
+
+    public function isAutoIncremented($tableName, $column)
+    {
+        $sql = "
+            SHOW COLUMNS
+            FROM " . $tableName . "
+            WHERE Extra LIKE '%auto_increment%';";
+
+        $result = \DB::connection('mysql')
+          ->select(\DB::raw($sql));
+
+        if (count($result) < 0) {
+            return false;
+        }
+
+        foreach ($result as $r) {
+            if ($r->Field === $column) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
