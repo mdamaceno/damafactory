@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1;
 
+use App\Http\Controllers\Controller;
 use App\Support\Helpers;
 use App\Support\ConnectDatabase;
 use App\Support\Firebird;
@@ -146,7 +147,6 @@ class ApiController extends Controller
             ->buildFilteringUpdate(request(), $query, $tableName);
 
         $paramsToSave = $result['paramsToSave'];
-        $query = $result['query'];
 
         if (count($paramsToSave) < 1) {
             return response()->json([
@@ -156,6 +156,8 @@ class ApiController extends Controller
                 ],
             ]);
         }
+
+        $query = $result['query'];
 
         $rowsUpdated = $query->update($paramsToSave);
 

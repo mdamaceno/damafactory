@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix' => '/{db_name}'], function () {
+Route::group(['prefix' => 'v1/{db_name}', 'namespace' => 'API\V1'], function () {
     Route::get('/{table_name}', 'ApiController@getManyData');
     Route::get('/{table_name}/{id}', 'ApiController@getSingleData');
     Route::post('/{table_name}', 'ApiController@postData');
