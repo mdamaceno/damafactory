@@ -149,6 +149,8 @@ class ApiController extends Controller
         $paramsToSave = $result['paramsToSave'];
 
         if (count($paramsToSave) < 1) {
+            $this->connDB->unsetDatabase($database->driver);
+            
             return response()->json([
                 'data' => [
                     'sucesss' => true,
@@ -171,6 +173,8 @@ class ApiController extends Controller
                 ],
             ]);
         }
+
+        $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
             'data' => [

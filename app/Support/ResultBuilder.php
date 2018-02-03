@@ -155,8 +155,11 @@ class ResultBuilder
         }
 
         if ($query->getConnection()->getName() === 'mysql') {
+            $mysql = new MySQL();
             foreach ($request->except('filter') as $key => $r) {
-                $arr['paramsToSave'][$key] = $r;
+                if (!$mysql->isAutoIncremented($tableName, $key)) {
+                    $arr['paramsToSave'][$key] = $r;
+                }
             }
         }
 
