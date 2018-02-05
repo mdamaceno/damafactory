@@ -76,4 +76,27 @@ class Firebird
 
         return (bool) $result[0]->IS_GENERATOR;
     }
+
+    public function getComputedColumns($tableName)
+    {
+        $arr = [];
+        $sql = "
+            SELECT
+                F.RDB\$FIELD_NAME AS FIELD_NAME
+            FROM RDB\$RELATION_FIELDS F
+            JOIN RDB\$FIELDS F2 ON F2.RDB\$FIELD_NAME = F.RDB\$FIELD_SOURCE
+            JOIN RDB\$RELATIONS R ON F.RDB\$RELATION_NAME = R.RDB\$RELATION_NAME
+
+            WHERE F.RDB\$RELATION_NAME = '" . $tableName . "'
+            AND F2.RDB\$COMPUTED_SOURCE IS NOT NULL;";
+
+        $result = \DB::connection('firebird')
+              ->select(\DB::raw($sql));
+
+        foreach ($result as $r) {
+            array_push($arr, trim($r->FIELD_NAME));
+        }
+
+        return $arr;
+    }
 }
