@@ -60,6 +60,7 @@ class ApiController extends Controller
             ->buildSingle(request(), $query, $tableName, $id);
 
         $data = (array) $result->first();
+
         $this->connDB->unsetDatabase($database->driver);
 
         return response()->json([
@@ -150,7 +151,7 @@ class ApiController extends Controller
 
         if (count($paramsToSave) < 1) {
             $this->connDB->unsetDatabase($database->driver);
-            
+
             return response()->json([
                 'data' => [
                     'sucesss' => true,
@@ -182,5 +183,34 @@ class ApiController extends Controller
                 'rows_updated' => 0,
             ],
         ]);
+    }
+
+    public function deleteData($dbName, $tableName, $id)
+    {
+        $database = $this->database($dbName);
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $result = $this->resultBuilder
+            ->buildDelete(request(), $query, $tableName, $id);
+
+        $id = $result['id'];
+        $query = $result['query'];
+
+        $columnId = array_keys($id)[0];
+
+        if ($query->where($columnId, $id[$columnId])->delete() > 0) {
+            $this->connDB->unsetDatabase($database->driver);
+
+            return response()->json([
+                'data' => [
+                    'sucesss' => true,
+                ],
+            ]);
+        }
+
+        $this->connDB->unsetDatabase($database->driver);
+
+        return new DatabaseException('delete');
     }
 }
