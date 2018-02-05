@@ -86,12 +86,15 @@ class ResultBuilder
             'paramsToSave' => [],
         ];
 
-        foreach ($request->all() as $key => $r) {
-            $arr['paramsToSave'][$key] = $r;
-        }
-
         if ($query->getConnection()->getName() === 'firebird') {
             $firebird = new Firebird();
+            $computedColumns = $firebird->getComputedColumns($tableName);
+
+            foreach ($request->all() as $key => $r) {
+                if (!in_array($key, $computedColumns)) {
+                    $arr['paramsToSave'][$key] = $r;
+                }
+            }
 
             foreach ($firebird->getNextId($tableName) as $key => $id) {
                 $arr['paramsToSave'][$key] = $id;
@@ -101,6 +104,10 @@ class ResultBuilder
 
         if ($query->getConnection()->getName() === 'mysql') {
             $mysql = new MySQL();
+
+            foreach ($request->all() as $key => $r) {
+                $arr['paramsToSave'][$key] = $r;
+            }
 
             foreach ($mysql->getNextId($tableName) as $key => $id) {
                 $arr['paramsToSave'][$key] = $id;
@@ -118,7 +125,19 @@ class ResultBuilder
             'paramsToSave' => [],
         ];
 
-        foreach ($request->all() as $key => $r) {
+        if ($query->getConnection()->getName() === 'firebird') {
+            $firebird = new Firebird();
+
+            $computedColumns = $firebird->getComputedColumns($tableName);
+
+            foreach ($request->all() as $key => $r) {
+                if (!in_array($key, $computedColumns)) {
+                    $arr['paramsToSave'][$key] = $r;
+                }
+            }
+        }
+
+        if ($query->getConnection()->getName() === 'mysql') {
             $arr['paramsToSave'][$key] = $r;
         }
 
@@ -150,9 +169,12 @@ class ResultBuilder
         if ($query->getConnection()->getName() === 'firebird') {
             $firebird = new Firebird();
             $primaryKeys = $firebird->getPrimaryKey($tableName);
+            $computedColumns = $firebird->getComputedColumns($tableName);
 
             foreach ($request->except('filter') as $key => $r) {
-                if (!in_array($key, $primaryKeys) && !$firebird->isGenerator($key)) {
+                if (!in_array($key, $primaryKeys)
+                    && !$firebird->isGenerator($key)
+                    && !in_array($key, $computedColumns)) {
                     $arr['paramsToSave'][$key] = $r;
                 }
             }
