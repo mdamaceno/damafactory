@@ -70,7 +70,11 @@ class ResultBuilder
 
         $primaryKeys = $this->getPrimaryKeyDatabase($query, $tableName);
 
-        $query->where($primaryKeys[0], $id);
+        $q = $query->where($primaryKeys[0], $id);
+
+        if ($q->count() < 1) {
+            throw new NotFoundException();
+        }
 
         return $query;
     }
@@ -166,6 +170,29 @@ class ResultBuilder
         foreach ($request->get('filter') as $key => $f) {
             $arr['query'] = $query->where($tableName . '.' . $key, $f);
         }
+
+        return $arr;
+    }
+
+    public function buildDelete(Request $request, $query, $tableName, $id)
+    {
+        $arr = [
+            'id' => [],
+            'query' => null,
+        ];
+
+        $primaryKeys = $this->getPrimaryKeyDatabase($query, $tableName);
+        $query = $query->where($primaryKeys[0], $id);
+
+        if ($query->where($primaryKeys[0], $id)->count() < 1) {
+            throw new NotFoundException();
+        }
+
+        foreach ($primaryKeys as $key => $p) {
+            $arr['id'][$p] = $id;
+        }
+
+        $arr['query'] = $query;
 
         return $arr;
     }

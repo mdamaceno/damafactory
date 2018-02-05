@@ -17,5 +17,9 @@ class DatabaseException extends Exception
         if ($type === 'update') {
             $this->message = 'Cannot update register in the database';
         }
+
+        if ($type === 'delete') {
+            $this->message = 'Cannot delete register in the database';
+        }
     }
 }
