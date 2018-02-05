@@ -197,6 +197,23 @@ class ResultBuilder
         return $arr;
     }
 
+    public function buildFilteringDelete(Request $request, $query, $tableName)
+    {
+        if (!$request->has('filter')) {
+            throw new \Exception("Error Processing Request");
+        }
+
+        $arr = [
+            'query' => null,
+        ];
+
+        foreach ($request->get('filter') as $key => $f) {
+            $arr['query'] = $query->where($tableName . '.' . $key, $f);
+        }
+
+        return $arr;
+    }
+
     private function getPrimaryKeyDatabase($query, $tableName)
     {
         if ($query->getConnection()->getName() === 'firebird') {

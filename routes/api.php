@@ -24,4 +24,5 @@ Route::group(['prefix' => 'v1/{db_name}', 'namespace' => 'API\V1'], function () 
     Route::match(['put', 'patch'], '/{table_name}/{id}', 'ApiController@updateData');
     Route::match(['put', 'patch'], '/{table_name}', 'ApiController@updateFilteringData');
     Route::delete('/{table_name}/{id}', 'ApiController@deleteData');
+    Route::delete('/{table_name}', 'ApiController@deleteFilteringData');
 });
