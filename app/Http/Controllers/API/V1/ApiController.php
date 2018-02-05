@@ -213,4 +213,38 @@ class ApiController extends Controller
 
         return new DatabaseException('delete');
     }
+
+    public function deleteFilteringData($dbName, $tableName)
+    {
+        $database = $this->database($dbName);
+        $this->connDB->setDatabase($database->driver, $database);
+        $query = \DB::connection($database->driver)->table($tableName);
+
+        $result = $this->resultBuilder
+            ->buildFilteringDelete(request(), $query, $tableName);
+
+        $query = $result['query'];
+
+        $rowsDeleted = $query->delete();
+
+        if ($rowsDeleted > 0) {
+            $this->connDB->unsetDatabase($database->driver);
+
+            return response()->json([
+                'data' => [
+                    'sucesss' => true,
+                    'rows_deleted' => $rowsDeleted,
+                ],
+            ]);
+        }
+
+        $this->connDB->unsetDatabase($database->driver);
+
+        return response()->json([
+            'data' => [
+                'sucesss' => false,
+                'rows_deleted' => 0,
+            ],
+        ]);
+    }
 }
