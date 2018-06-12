@@ -1,6 +1,6 @@
-# DB2API
+# Damafactory
 
-DB2API is an open source parser for databases into REST API.
+Damafactory is an open source parser for databases into REST API.
 
 Supported databases:
 
