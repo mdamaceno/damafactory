@@ -24,6 +24,7 @@ class CreateDbsDatabase extends Migration
             $table->string('password');
             $table->string('charset')->default('utf8');
             $table->string('prefix')->nullable()->default('');
+            $table->string('token')->nullable();
         });
     }
 
