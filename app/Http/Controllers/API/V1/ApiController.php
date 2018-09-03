@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Support\Helpers;
 use App\Support\ConnectDatabase;
-use App\Support\Firebird;
 use App\Support\ResultBuilder;
 use App\Exceptions\DatabaseException;
 use ForceUTF8\Encoding;
