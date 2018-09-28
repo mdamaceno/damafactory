@@ -245,4 +245,23 @@ class ApiController extends Controller
             ],
         ]);
     }
+
+    public function getDatabaseInfo($label)
+    {
+        $db = \DB::table('dbs')
+            ->select([
+                'label',
+                'driver',
+                'host',
+                'port',
+                'database',
+                'charset',
+            ])
+            ->where('label', $label)
+            ->first();
+
+        return response()->json([
+            'data' => $db,
+        ]);
+    }
 }
