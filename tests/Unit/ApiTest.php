@@ -25,7 +25,6 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->json('GET', '/api/v1/abc');
-        eval(\Psy\sh());
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
