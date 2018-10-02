@@ -2,7 +2,7 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Token::class, function (Faker $faker) {
+$factory->define(App\DBToken::class, function (Faker $faker) {
     return [
         //
     ];
