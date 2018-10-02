@@ -11,8 +11,10 @@ class ApiTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-    public function testGetDatabaseWithMiddleware()
+    public function testGetDatabaseInfoWithoutMiddleware()
     {
+        $this->withoutMiddleware();
+
         \DB::table('dbs')->insert([
             'label' => 'abc',
             'driver' => 'firebird',
@@ -37,5 +39,9 @@ class ApiTest extends TestCase
                 'charset',
             ],
         ]);
+    }
+
+    public function testGetUserInfo()
+    {
     }
 }
