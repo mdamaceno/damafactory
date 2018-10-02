@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\User;
 use JWTAuth;
 use Validator;
 use Response;
+use App\Http\Controllers\Controller;
 
-class APIRegisterController extends Controller
+class RegisterController extends Controller
 {
     //
     public function register(Request $request)

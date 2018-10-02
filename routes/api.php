@@ -17,21 +17,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('user/register', 'APIRegisterController@register');
-Route::post('user/login', 'APILoginController@login');
+Route::post('user/register', 'API\RegisterController@register');
+Route::post('user/login', 'API\LoginController@login');
 
 Route::group([
-    'prefix' => 'v1/{db_name}',
-    'namespace' => 'API\V1',
+    'prefix' => '{db_name}',
+    'namespace' => 'API',
     'middleware' => ['jwt.auth'],
 ], function () {
-    Route::get('/{table_name}', 'ApiController@getManyData');
-    Route::get('/{table_name}/{id}', 'ApiController@getSingleData');
-    Route::post('/{table_name}', 'ApiController@postData');
-    Route::match(['put', 'patch'], '/{table_name}/{id}', 'ApiController@updateData');
-    Route::match(['put', 'patch'], '/{table_name}', 'ApiController@updateFilteringData');
-    Route::delete('/{table_name}/{id}', 'ApiController@deleteData');
-    Route::delete('/{table_name}', 'ApiController@deleteFilteringData');
+    Route::get('/{table_name}', 'DatabasesController@getManyData');
+    Route::get('/{table_name}/{id}', 'DatabasesController@getSingleData');
+    Route::post('/{table_name}', 'DatabasesController@postData');
+    Route::match(['put', 'patch'], '/{table_name}/{id}', 'DatabasesController@updateData');
+    Route::match(['put', 'patch'], '/{table_name}', 'DatabasesController@updateFilteringData');
+    Route::delete('/{table_name}/{id}', 'DatabasesController@deleteData');
+    Route::delete('/{table_name}', 'DatabasesController@deleteFilteringData');
 
-    Route::get('/', 'ApiController@getDatabaseInfo');
+    Route::get('/', 'DatabasesController@getDatabaseInfo');
 });

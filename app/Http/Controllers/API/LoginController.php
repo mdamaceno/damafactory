@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
+use App\Http\Controllers\Controller;
 
-class APILoginController extends Controller
+class LoginController extends Controller
 {
     public function login(Request $request)
     {

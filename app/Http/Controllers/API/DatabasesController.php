@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\V1;
+namespace App\Http\Controllers\API;
 
 use App\Dbs;
 use App\Exceptions\DatabaseException;
@@ -9,7 +9,7 @@ use App\Support\ConnectDatabase;
 use App\Support\ResultBuilder;
 use ForceUTF8\Encoding;
 
-class ApiController extends Controller
+class DatabasesController extends Controller
 {
     public function __construct()
     {

@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ApiTest extends TestCase
+class DatabasesTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
@@ -20,7 +20,7 @@ class ApiTest extends TestCase
             'database' => 'abc',
         ]);
 
-        $response = $this->json('GET', '/api/v1/abc');
+        $response = $this->json('GET', '/api/abc');
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
@@ -35,9 +35,9 @@ class ApiTest extends TestCase
         ]);
     }
 
-    public function testGet404WithoutToken()
+    public function testGet400WithoutToken()
     {
-        $response = $this->json('GET', '/api/v1/abc');
+        $response = $this->json('GET', '/api/abc');
         $response->assertStatus(400);
     }
 }
