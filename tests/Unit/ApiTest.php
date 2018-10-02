@@ -15,15 +15,9 @@ class ApiTest extends TestCase
     {
         $this->withoutMiddleware();
 
-        \DB::table('dbs')->insert([
+        factory(\App\Dbs::class)->create([
             'label' => 'abc',
-            'driver' => 'firebird',
-            'host' => 'localhost',
-            'port' => 8000,
             'database' => 'abc',
-            'username' => 'user',
-            'password' => 'pass',
-            'charset' => 'utf8',
         ]);
 
         $response = $this->json('GET', '/api/v1/abc');
@@ -41,7 +35,9 @@ class ApiTest extends TestCase
         ]);
     }
 
-    public function testGetUserInfo()
+    public function testGet404WithoutToken()
     {
+        $response = $this->json('GET', '/api/v1/abc');
+        $response->assertStatus(400);
     }
 }

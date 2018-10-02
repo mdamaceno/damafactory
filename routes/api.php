@@ -17,7 +17,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix' => 'v1/{db_name}', 'namespace' => 'API\V1'], function () {
+Route::post('user/register', 'APIRegisterController@register');
+Route::post('user/login', 'APILoginController@login');
+
+Route::group([
+    'prefix' => 'v1/{db_name}',
+    'namespace' => 'API\V1',
+    'middleware' => ['jwt.auth'],
+], function () {
     Route::get('/{table_name}', 'ApiController@getManyData');
     Route::get('/{table_name}/{id}', 'ApiController@getSingleData');
     Route::post('/{table_name}', 'ApiController@postData');

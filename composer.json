@@ -14,10 +14,11 @@
     "require": {
         "php": ">=7.0.0",
         "fideloper/proxy": "^4.0",
+        "jacquestvanzuydam/laravel-firebird": "dev-5.4-support",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
-        "jacquestvanzuydam/laravel-firebird": "dev-5.4-support",
-        "neitanod/forceutf8": "~2.0"
+        "neitanod/forceutf8": "~2.0",
+        "tymon/jwt-auth": "^0.5.12"
     },
     "require-dev": {
         "filp/whoops": "~2.0",

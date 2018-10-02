@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Dbs;
+use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
 use App\Support\ConnectDatabase;
 use App\Support\ResultBuilder;
-use App\Exceptions\DatabaseException;
 use ForceUTF8\Encoding;
 
 class ApiController extends Controller
@@ -248,8 +249,7 @@ class ApiController extends Controller
 
     public function getDatabaseInfo($label)
     {
-        $db = \DB::table('dbs')
-            ->select([
+        $db = Dbs::select([
                 'label',
                 'driver',
                 'host',
