@@ -21,5 +21,16 @@ class RegisterTest extends TestCase
 
         $response = $this->json('POST', '/api/user/register', $user);
         $response->assertStatus(200);
+
+        $token = $response->getData()->token;
+
+        $this->assertDatabaseHas('auth_tokens', [
+            'token' => $token,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'email' => $user['email'],
+            'name' => $user['name'],
+        ]);
     }
 }

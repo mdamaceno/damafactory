@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
-use Validator;
-use JWTAuth;
+use App\AuthToken;
 use App\Http\Controllers\Controller;
+use App\User;
+use Illuminate\Http\Request;
+use JWTAuth;
+use Validator;
 
 class LoginController extends Controller
 {
@@ -29,6 +31,13 @@ class LoginController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        AuthToken::create([
+            'user_id' => $user->id,
+            'token' => $token,
+        ]);
 
         return response()->json(compact('token'));
     }

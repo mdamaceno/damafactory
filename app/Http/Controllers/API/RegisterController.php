@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use App\AuthToken;
 use App\User;
 use JWTAuth;
 use Validator;
@@ -32,6 +33,11 @@ class RegisterController extends Controller
 
         $user = User::first();
         $token = JWTAuth::fromUser($user);
+
+        AuthToken::create([
+            'user_id' => $user->id,
+            'token' => $token,
+        ]);
 
         return Response::json(compact('token'));
     }
