@@ -17,6 +17,7 @@ class RegisterTest extends TestCase
             'email' => $this->faker->unique()->safeEmail(),
             'password' => $this->faker->password,
             'name' => 'username',
+            'role' => 'master',
         ];
 
         $response = $this->json('POST', '/api/user/register', $user);

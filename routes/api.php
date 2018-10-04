@@ -23,7 +23,7 @@ Route::post('user/login', 'API\LoginController@login');
 Route::group([
     'prefix' => '{db_name}',
     'namespace' => 'API',
-    'middleware' => ['jwt.auth'],
+    'middleware' => ['jwt.auth', 'role.permission'],
 ], function () {
     Route::get('/{table_name}', 'DatabasesController@getManyData');
     Route::get('/{table_name}/{id}', 'DatabasesController@getSingleData');

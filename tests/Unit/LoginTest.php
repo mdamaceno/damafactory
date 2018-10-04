@@ -15,6 +15,7 @@ class LoginTest extends TestCase
     {
         $user = factory(\App\User::class)->create([
             'email' => $this->faker->unique()->safeEmail(),
+            'role' => 'master',
         ]);
 
         $login = [

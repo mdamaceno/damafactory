@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use App\AuthToken;
 use App\User;
 use JWTAuth;
 use Validator;
@@ -18,7 +17,8 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:255|unique:users',
             'name' => 'required',
-            'password' => 'required'
+            'password' => 'required',
+            'role' => 'filled|in:db,master',
         ]);
 
         if ($validator->fails()) {
@@ -29,12 +29,13 @@ class RegisterController extends Controller
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => bcrypt($request->get('password')),
+            'role' => $request->get('role'),
         ]);
 
-        $user = User::first();
+        $user = User::where('email', $request->get('email'))->first();
         $token = JWTAuth::fromUser($user);
 
-        AuthToken::create([
+        $user->authTokens()->create([
             'user_id' => $user->id,
             'token' => $token,
         ]);
