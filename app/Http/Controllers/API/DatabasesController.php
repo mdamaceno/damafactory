@@ -5,16 +5,19 @@ namespace App\Http\Controllers\API;
 use App\Dbs;
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
-use App\Support\ConnectDatabase;
+use App\Http\Requests\API\InsertDatabaseRequest;
+use App\Repositories\DatabaseRepository;
 use App\Support\ResultBuilder;
 use ForceUTF8\Encoding;
 
 class DatabasesController extends Controller
 {
+    private $dbRepository;
+
     public function __construct()
     {
-        $this->connDB = new ConnectDatabase();
         $this->resultBuilder = new ResultBuilder();
+        $this->dbRepository = new DatabaseRepository(null, env('DB_CONNECTION'));
     }
 
     private function database($dbName)
@@ -29,9 +32,7 @@ class DatabasesController extends Controller
 
     public function getManyData($dbName, $tableName)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildMany(request(), $query, $tableName)
@@ -42,7 +43,7 @@ class DatabasesController extends Controller
             array_push($arr, get_object_vars($r));
         }
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return response()->json([
             'data' => Encoding::toUTF8($arr),
@@ -51,16 +52,14 @@ class DatabasesController extends Controller
 
     public function getSingleData($dbName, $tableName, $id)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildSingle(request(), $query, $tableName, $id);
 
         $data = (array) $result->first();
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return response()->json([
             'data' => Encoding::toUTF8($data),
@@ -69,9 +68,7 @@ class DatabasesController extends Controller
 
     public function postData($dbName, $tableName)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildCreate(request(), $query, $tableName);
@@ -81,7 +78,7 @@ class DatabasesController extends Controller
 
         if ($query->insert($paramsToSave)) {
             if (count($id) !== 1) {
-                $this->connDB->unsetDatabase($database->driver);
+                $this->dbRepository->unsetDatabase();
 
                 return response()->json([
                     'data' => [
@@ -92,28 +89,26 @@ class DatabasesController extends Controller
             }
 
             $columnId = array_keys($id)[0];
-            $query = \DB::connection($database->driver)->table($tableName);
+            $query = $dbRepository->getQuery($tableName, $dbName);
             $lastInsert = $query
                 ->where($columnId, $id[$columnId])
                 ->first();
 
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => Encoding::toUTF8($lastInsert),
             ]);
         }
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return new DatabaseException('insert');
     }
 
     public function updateData($dbName, $tableName, $id)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildUpdate(request(), $query, $tableName, $id);
@@ -127,7 +122,7 @@ class DatabasesController extends Controller
                 ->where($columnId, $id[$columnId])
                 ->first();
 
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => Encoding::toUTF8($lastUpdate),
@@ -139,9 +134,7 @@ class DatabasesController extends Controller
 
     public function updateFilteringData($dbName, $tableName)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildFilteringUpdate(request(), $query, $tableName);
@@ -149,7 +142,7 @@ class DatabasesController extends Controller
         $paramsToSave = $result['paramsToSave'];
 
         if (count($paramsToSave) < 1) {
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => [
@@ -164,7 +157,7 @@ class DatabasesController extends Controller
         $rowsUpdated = $query->update($paramsToSave);
 
         if ($rowsUpdated > 0) {
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => [
@@ -174,7 +167,7 @@ class DatabasesController extends Controller
             ]);
         }
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return response()->json([
             'data' => [
@@ -186,9 +179,7 @@ class DatabasesController extends Controller
 
     public function deleteData($dbName, $tableName, $id)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildDelete(request(), $query, $tableName, $id);
@@ -199,7 +190,7 @@ class DatabasesController extends Controller
         $columnId = array_keys($id)[0];
 
         if ($query->where($columnId, $id[$columnId])->delete() > 0) {
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => [
@@ -208,16 +199,14 @@ class DatabasesController extends Controller
             ]);
         }
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return new DatabaseException('delete');
     }
 
     public function deleteFilteringData($dbName, $tableName)
     {
-        $database = $this->database($dbName);
-        $this->connDB->setDatabase($database->driver, $database);
-        $query = \DB::connection($database->driver)->table($tableName);
+        $query = $dbRepository->getQuery($tableName, $dbName);
 
         $result = $this->resultBuilder
             ->buildFilteringDelete(request(), $query, $tableName);
@@ -227,7 +216,7 @@ class DatabasesController extends Controller
         $rowsDeleted = $query->delete();
 
         if ($rowsDeleted > 0) {
-            $this->connDB->unsetDatabase($database->driver);
+            $this->dbRepository->unsetDatabase();
 
             return response()->json([
                 'data' => [
@@ -237,7 +226,7 @@ class DatabasesController extends Controller
             ]);
         }
 
-        $this->connDB->unsetDatabase($database->driver);
+        $this->dbRepository->unsetDatabase();
 
         return response()->json([
             'data' => [
@@ -263,5 +252,34 @@ class DatabasesController extends Controller
         return response()->json([
             'data' => $db,
         ]);
+    }
+
+    public function insertDatabase(InsertDatabaseRequest $request)
+    {
+        Dbs::create($request->only(
+            'label',
+            'driver',
+            'host',
+            'port',
+            'username',
+            'password',
+            'database',
+            'charset'
+        ));
+
+        $db = Dbs::select([
+                'label',
+                'driver',
+                'host',
+                'port',
+                'database',
+                'charset',
+            ])
+            ->where('label', $request->get('label'))
+            ->first();
+
+        return response()->json([
+            'data' => $db,
+        ], 202);
     }
 }

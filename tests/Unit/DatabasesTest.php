@@ -86,4 +86,28 @@ class DatabasesTest extends TestCase
         $response = $this->json('GET', '/api/abc');
         $response->assertStatus(400);
     }
+
+    public function testInsertDatabaseWithoutMiddleware()
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->make([
+            'label' => 'abc',
+            'database' => 'abc',
+        ]);
+
+        $response = $this->json('POST', '/api/databases', $db->toArray());
+        $response->assertStatus(202);
+
+        $response->assertJsonStructure([
+            'data' => [
+                'label',
+                'driver',
+                'host',
+                'port',
+                'database',
+                'charset',
+            ],
+        ]);
+    }
 }

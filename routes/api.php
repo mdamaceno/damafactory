@@ -21,6 +21,14 @@ Route::post('user/register', 'API\RegisterController@register');
 Route::post('user/login', 'API\LoginController@login');
 
 Route::group([
+    'prefix' => 'databases',
+    'namespace' => 'API',
+    'middleware' => ['jwt.auth', 'role.permission'],
+], function () {
+    Route::post('/', 'DatabasesController@insertDatabase');
+});
+
+Route::group([
     'prefix' => '{db_name}',
     'namespace' => 'API',
     'middleware' => ['jwt.auth', 'role.permission'],
