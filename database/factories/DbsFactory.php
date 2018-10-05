@@ -8,7 +8,7 @@ $factory->define(App\Dbs::class, function (Faker $faker) {
     return [
         'label' => $name,
         'driver' => 'firebird',
-        'host' => 'localhost',
+        'host' => '127.0.0.1',
         'port' => 8000,
         'database' => $name,
         'username' => $faker->userName,

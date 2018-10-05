@@ -24,7 +24,7 @@ class DatabasesTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",
-        ])->json('GET', '/api/abc');
+        ])->json('GET', '/api/databases/abc');
 
         $response->assertStatus(200);
 
@@ -52,7 +52,7 @@ class DatabasesTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",
-        ])->json('GET', '/api/abc');
+        ])->json('GET', '/api/databases/abc');
 
         $response->assertStatus(404);
     }
@@ -66,7 +66,7 @@ class DatabasesTest extends TestCase
             'database' => 'abc',
         ]);
 
-        $response = $this->json('GET', '/api/abc');
+        $response = $this->json('GET', '/api/databases/abc');
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
@@ -83,7 +83,7 @@ class DatabasesTest extends TestCase
 
     public function testGet400WithoutToken()
     {
-        $response = $this->json('GET', '/api/abc');
+        $response = $this->json('GET', '/api/databases/abc');
         $response->assertStatus(400);
     }
 
@@ -109,5 +109,45 @@ class DatabasesTest extends TestCase
                 'charset',
             ],
         ]);
+    }
+
+    public function invalidInsertDatabaseData()
+    {
+        $faker = \Faker\Factory::create('pt_BR');
+        $faker->addProvider(new \App\Support\CustomFaker($faker));
+
+        return [
+            [['label' => null]],
+            [['label' => $faker->string(256)]],
+            [['label' => $faker->string(2)]],
+            [['driver' => null]],
+            [['driver' => $faker->string(10)]],
+            [['host' => null]],
+            [['host' => $faker->string(10)]],
+            [['port' => null]],
+            [['port' => $faker->string(10)]],
+            [['database' => null]],
+            [['database' => $faker->string(256)]],
+            [['username' => null]],
+            [['username' => $faker->string(256)]],
+            [['password' => null]],
+            [['charset' => null]],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidInsertDatabaseData
+     */
+    public function testValidationInsertDatabaseWithoutMiddleware($inputData)
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->make($inputData);
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+        ])->json('POST', '/api/databases', $db->toArray());
+
+        $response->assertStatus(422);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class VerifyToken
+class VerifyUserPermission
 {
     /**
      * Handle an incoming request.

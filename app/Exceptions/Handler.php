@@ -46,33 +46,79 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
-        $errorBag = [
-            'message' => 'Sorry, something went wrong!',
-            'status_code' => 500,
-        ];
-
-        if ($e instanceof NoPrimaryKeyException
-            || $e instanceof ManyPrimaryKeysException) {
-            $errorBag['status_code'] = 400;
+        if ($request->wantsJson()) {   //add Accept: application/json in request
+            return $this->handleApiException($request, $exception);
+        } else {
+            $retval = parent::render($request, $exception);
         }
 
-        if ($e instanceof NotFoundException) {
-            $errorBag['status_code'] = 404;
+        return $retval;
+    }
+
+    private function handleApiException($request, Exception $exception)
+    {
+        $exception = $this->prepareException($exception);
+
+        if ($exception instanceof \Illuminate\Http\Exception\HttpResponseException) {
+            $exception = $exception->getResponse();
         }
 
-        if ($e instanceof DatabaseException) {
-            $errorBag['status_code'] = 500;
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            $exception = $this->unauthenticated($request, $exception);
+        }
+
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            $exception = $this->convertValidationExceptionToResponse($exception, $request);
+        }
+
+        return $this->customApiResponse($exception);
+    }
+
+    private function customApiResponse($exception)
+    {
+        if (method_exists($exception, 'getStatusCode')) {
+            $statusCode = $exception->getStatusCode();
+        } else {
+            $statusCode = 500;
+        }
+
+        $response = [];
+
+        switch ($statusCode) {
+            case 401:
+                $response['message'] = 'Unauthorized';
+                break;
+            case 403:
+                $response['message'] = 'Forbidden';
+                break;
+            case 404:
+                $response['message'] = 'Not Found';
+                break;
+            case 405:
+                $response['message'] = 'Method Not Allowed';
+                break;
+            case 422:
+                $response['message'] = $exception->original['message'];
+                $response['errors'] = $exception->original['errors'];
+                break;
+            default:
+                $response['message'] = ($statusCode == 500) ? 'Whoops, looks like something went wrong' : $exception->getMessage();
+                break;
         }
 
         if (config('app.debug')) {
-            $errorBag['real_message'] = $e->getMessage();
-            $errorBag['file'] = $e->getFile();
-            $errorBag['line'] = $e->getLine();
-            $errorBag['trace'] = $e->getTraceAsString();
+            if (method_exists($exception, 'getTrace')) {
+                $response['trace'] = $exception->getTrace();
+            }
+            if (method_exists($exception, 'getCode')) {
+                $response['code'] = $exception->getCode();
+            }
         }
 
-        return response()->json(['error' => $errorBag], $errorBag['status_code']);
+        $response['status'] = $statusCode;
+
+        return response()->json($response, $statusCode);
     }
 }

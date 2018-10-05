@@ -26,20 +26,18 @@ Route::group([
     'middleware' => ['jwt.auth', 'role.permission'],
 ], function () {
     Route::post('/', 'DatabasesController@insertDatabase');
-});
 
-Route::group([
-    'prefix' => '{db_name}',
-    'namespace' => 'API',
-    'middleware' => ['jwt.auth', 'role.permission'],
-], function () {
-    Route::get('/{table_name}', 'DatabasesController@getManyData');
-    Route::get('/{table_name}/{id}', 'DatabasesController@getSingleData');
-    Route::post('/{table_name}', 'DatabasesController@postData');
-    Route::match(['put', 'patch'], '/{table_name}/{id}', 'DatabasesController@updateData');
-    Route::match(['put', 'patch'], '/{table_name}', 'DatabasesController@updateFilteringData');
-    Route::delete('/{table_name}/{id}', 'DatabasesController@deleteData');
-    Route::delete('/{table_name}', 'DatabasesController@deleteFilteringData');
+    Route::group([
+        'prefix' => '{db_name}',
+    ], function () {
+        Route::get('/{table_name}', 'DatabasesController@getManyData');
+        Route::get('/{table_name}/{id}', 'DatabasesController@getSingleData');
+        Route::post('/{table_name}', 'DatabasesController@postData');
+        Route::match(['put', 'patch'], '/{table_name}/{id}', 'DatabasesController@updateData');
+        Route::match(['put', 'patch'], '/{table_name}', 'DatabasesController@updateFilteringData');
+        Route::delete('/{table_name}/{id}', 'DatabasesController@deleteData');
+        Route::delete('/{table_name}', 'DatabasesController@deleteFilteringData');
 
-    Route::get('/', 'DatabasesController@getDatabaseInfo');
+        Route::get('/', 'DatabasesController@getDatabaseInfo');
+    });
 });
