@@ -6,6 +6,7 @@ use App\Dbs;
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\InsertDatabaseRequest;
+use App\Http\Requests\API\UpdateDatabaseRequest;
 use App\Repositories\DatabaseRepository;
 use App\Support\ResultBuilder;
 use ForceUTF8\Encoding;
@@ -281,5 +282,25 @@ class DatabasesController extends Controller
         return response()->json([
             'data' => $db,
         ], 202);
+    }
+
+    public function updateDatabase(UpdateDatabaseRequest $request, $label)
+    {
+        $db = Dbs::where('label', $label)->first();
+
+        $db->update($request->only(
+            'label',
+            'driver',
+            'host',
+            'port',
+            'username',
+            'password',
+            'database',
+            'charset'
+        ));
+
+        return response()->json([
+            'data' => $db,
+        ], 200);
     }
 }

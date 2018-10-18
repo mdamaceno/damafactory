@@ -26,6 +26,7 @@ Route::group([
     'middleware' => ['jwt.auth', 'role.permission'],
 ], function () {
     Route::post('/', 'DatabasesController@insertDatabase');
+    Route::match(['put', 'patch'], '/{id}', 'DatabasesController@updateDatabase');
 
     Route::group([
         'prefix' => '{db_name}',

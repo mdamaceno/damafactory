@@ -150,4 +150,45 @@ class DatabasesTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function testUpdateDatabaseWithoutMiddleware()
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->create();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+        ])->json('PATCH', '/api/databases/' . $db->label, ['database' => 'kkk']);
+        $response->assertStatus(200);
+
+        $this->assertEquals('kkk', $response->getData()->data->database);
+
+        $response->assertJsonStructure([
+            'data' => [
+                'label',
+                'driver',
+                'host',
+                'port',
+                'database',
+                'charset',
+            ],
+        ]);
+    }
+
+    /**
+     * @dataProvider invalidInsertDatabaseData
+     */
+    public function testValidationUpdateDatabaseWithoutMiddleware($inputData)
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->create();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+        ])->json('PATCH', '/api/databases/' . $db->label, $inputData);
+
+        $response->assertStatus(422);
+    }
 }
