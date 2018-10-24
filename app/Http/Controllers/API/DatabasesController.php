@@ -248,7 +248,7 @@ class DatabasesController extends Controller
                 'charset',
             ])
             ->where('label', $label)
-            ->first();
+            ->firstOrFail();
 
         return response()->json([
             'data' => $db,
@@ -286,7 +286,7 @@ class DatabasesController extends Controller
 
     public function updateDatabase(UpdateDatabaseRequest $request, $label)
     {
-        $db = Dbs::where('label', $label)->first();
+        $db = Dbs::where('label', $label)->firstOrFail();
 
         $db->update($request->only(
             'label',
@@ -302,5 +302,13 @@ class DatabasesController extends Controller
         return response()->json([
             'data' => $db,
         ], 200);
+    }
+
+    public function deleteDatabase($label)
+    {
+        $db = Dbs::where('label', $label)->firstOrFail();
+        $db->delete();
+
+        return response()->json([], 204);
     }
 }
