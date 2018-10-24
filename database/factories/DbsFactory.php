@@ -14,5 +14,6 @@ $factory->define(App\Dbs::class, function (Faker $faker) {
         'username' => $faker->userName,
         'password' => bcrypt($faker->password),
         'charset' => 'utf8',
+        'token' => bin2hex(openssl_random_pseudo_bytes(32)),
     ];
 });

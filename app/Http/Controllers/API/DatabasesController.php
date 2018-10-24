@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\InsertDatabaseRequest;
 use App\Http\Requests\API\UpdateDatabaseRequest;
 use App\Repositories\DatabaseRepository;
+use App\Support\Helpers;
 use App\Support\ResultBuilder;
 use ForceUTF8\Encoding;
 
@@ -248,6 +249,7 @@ class DatabasesController extends Controller
                 'charset',
             ])
             ->where('label', $label)
+            ->where('token', request()->header('Database-Token'))
             ->firstOrFail();
 
         return response()->json([
@@ -257,7 +259,8 @@ class DatabasesController extends Controller
 
     public function insertDatabase(InsertDatabaseRequest $request)
     {
-        Dbs::create($request->only(
+        $db = new Dbs();
+        $db->fill($request->only(
             'label',
             'driver',
             'host',
@@ -268,6 +271,9 @@ class DatabasesController extends Controller
             'charset'
         ));
 
+        $db->token = Helpers::securerandom();
+        $db->save();
+
         $db = Dbs::select([
                 'label',
                 'driver',
@@ -275,6 +281,7 @@ class DatabasesController extends Controller
                 'port',
                 'database',
                 'charset',
+                'token',
             ])
             ->where('label', $request->get('label'))
             ->first();
@@ -286,7 +293,9 @@ class DatabasesController extends Controller
 
     public function updateDatabase(UpdateDatabaseRequest $request, $label)
     {
-        $db = Dbs::where('label', $label)->firstOrFail();
+        $db = Dbs::where('label', $label)
+            ->where('token', request()->header('Database-Token'))
+            ->firstOrFail();
 
         $db->update($request->only(
             'label',
@@ -306,7 +315,9 @@ class DatabasesController extends Controller
 
     public function deleteDatabase($label)
     {
-        $db = Dbs::where('label', $label)->firstOrFail();
+        $db = Dbs::where('label', $label)
+            ->where('token', request()->header('Database-Token'))
+            ->firstOrFail();
         $db->delete();
 
         return response()->json([], 204);

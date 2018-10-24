@@ -17,13 +17,16 @@ class DatabasesTest extends TestCase
         $user = factory(\App\User::class)->create(['role' => 'master']);
         $token = JWTAuth::fromUser($user);
 
-        factory(\App\Dbs::class)->create([
+        $db = factory(\App\Dbs::class)->create([
             'label' => 'abc',
             'database' => 'abc',
         ]);
 
+        $dbToken = $db->token;
+
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",
+            'Database-Token' => $dbToken,
         ])->json('GET', '/api/databases/abc');
 
         $response->assertStatus(200);
@@ -61,12 +64,17 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
-        factory(\App\Dbs::class)->create([
+        $db = factory(\App\Dbs::class)->create([
             'label' => 'abc',
             'database' => 'abc',
         ]);
 
-        $response = $this->json('GET', '/api/databases/abc');
+        $dbToken = $db->token;
+
+        $response = $this->withHeaders([
+            'Database-Token' => $dbToken,
+        ])
+        ->json('GET', '/api/databases/abc');
         $response->assertStatus(200);
 
         $response->assertJsonStructure([
@@ -97,6 +105,7 @@ class DatabasesTest extends TestCase
         ]);
 
         $response = $this->json('POST', '/api/databases', $db->toArray());
+        eval(\Psy\sh());
         $response->assertStatus(202);
 
         $response->assertJsonStructure([
@@ -107,6 +116,7 @@ class DatabasesTest extends TestCase
                 'port',
                 'database',
                 'charset',
+                'token',
             ],
         ]);
     }
@@ -159,11 +169,13 @@ class DatabasesTest extends TestCase
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
+            'Database-Token' => $db->token,
         ])->json('PATCH', '/api/databases/' . $db->label, ['database' => 'kkk']);
         $response->assertStatus(200);
 
         $this->assertEquals('kkk', $response->getData()->data->database);
 
+        eval(\Psy\sh());
         $response->assertJsonStructure([
             'data' => [
                 'label',
@@ -200,6 +212,7 @@ class DatabasesTest extends TestCase
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
+            'Database-Token' => $db->token,
         ])->json('DELETE', '/api/databases/' . $db->label);
 
         $response->assertStatus(204);
