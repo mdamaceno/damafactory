@@ -39,6 +39,7 @@ class DatabaseRepository
         $database = \DB::connection($this->connection)
             ->table('dbs')
             ->where('label', $dbName)
+            ->where('token', request()->header('Database-Token'))
             ->first();
 
         if ($set) {

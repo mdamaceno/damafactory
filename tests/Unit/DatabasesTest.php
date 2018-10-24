@@ -105,7 +105,6 @@ class DatabasesTest extends TestCase
         ]);
 
         $response = $this->json('POST', '/api/databases', $db->toArray());
-        eval(\Psy\sh());
         $response->assertStatus(202);
 
         $response->assertJsonStructure([
@@ -175,7 +174,6 @@ class DatabasesTest extends TestCase
 
         $this->assertEquals('kkk', $response->getData()->data->database);
 
-        eval(\Psy\sh());
         $response->assertJsonStructure([
             'data' => [
                 'label',
