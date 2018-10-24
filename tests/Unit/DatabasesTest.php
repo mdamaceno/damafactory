@@ -191,4 +191,30 @@ class DatabasesTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function testDeleteDatabaseWithoutMiddleware()
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->create();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+        ])->json('DELETE', '/api/databases/' . $db->label);
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('dbs', $db->toArray());
+    }
+
+    public function testTryDeleteNotFound()
+    {
+        $this->withoutMiddleware();
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+        ])->json('DELETE', '/api/databases/' . 'abc');
+
+        $response->assertStatus(404);
+    }
 }

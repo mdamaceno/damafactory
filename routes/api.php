@@ -27,6 +27,7 @@ Route::group([
 ], function () {
     Route::post('/', 'DatabasesController@insertDatabase');
     Route::match(['put', 'patch'], '/{id}', 'DatabasesController@updateDatabase');
+    Route::delete('/{id}', 'DatabasesController@deleteDatabase');
 
     Route::group([
         'prefix' => '{db_name}',
