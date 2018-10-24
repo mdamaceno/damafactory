@@ -22,16 +22,6 @@ class DatabasesController extends Controller
         $this->dbRepository = new DatabaseRepository(null, env('DB_CONNECTION'));
     }
 
-    private function database($dbName)
-    {
-        $database = \DB::connection(env('DB_CONNECTION'))
-            ->table('dbs')
-            ->where('label', $dbName)
-            ->first();
-
-        return $database;
-    }
-
     public function getManyData($dbName, $tableName)
     {
         $query = $dbRepository->getQuery($tableName, $dbName);
