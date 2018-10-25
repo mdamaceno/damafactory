@@ -10,6 +10,7 @@ use App\Http\Requests\API\UpdateDatabaseRequest;
 use App\Repositories\DatabaseRepository;
 use App\Support\Helpers;
 use App\Support\ResultBuilder;
+use App\Support\ResponseBuilder;
 use ForceUTF8\Encoding;
 
 class DatabasesController extends Controller
@@ -20,6 +21,7 @@ class DatabasesController extends Controller
     {
         $this->resultBuilder = new ResultBuilder();
         $this->dbRepository = new DatabaseRepository(null, env('DB_CONNECTION'));
+        $this->response = new ResponseBuilder();
     }
 
     public function getManyData($dbName, $tableName)
@@ -36,6 +38,10 @@ class DatabasesController extends Controller
         }
 
         $this->dbRepository->unsetDatabase($dbName);
+
+        return $this->response
+                    ->setData(Encoding::toUTF8($arr))
+                    ->json();
 
         return response()->json([
             'data' => Encoding::toUTF8($arr),
