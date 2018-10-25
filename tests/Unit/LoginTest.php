@@ -23,7 +23,12 @@ class LoginTest extends TestCase
             'password' => 'secret',
         ];
 
-        $response = $this->json('POST', '/api/user/login', $login);
+        $encoded = base64_encode($login['email'] . ':' . $login['password']);
+
+        $response = $this->withHeaders([
+            'Authorization' => "Basic $encoded",
+        ])->json('POST', '/api/user/login');
+
         $response->assertStatus(200);
 
         $token = $response->getData()->token;

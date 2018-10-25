@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +14,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        NotFoundHttpException::class,
     ];
 
     /**
@@ -84,7 +85,9 @@ class Handler extends ExceptionHandler
             $statusCode = 500;
         }
 
-        $response = [];
+        $response = [
+            'error' => true,
+        ];
 
         switch ($statusCode) {
             case 401:

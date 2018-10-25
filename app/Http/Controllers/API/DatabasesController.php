@@ -24,7 +24,7 @@ class DatabasesController extends Controller
 
     public function getManyData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildMany(request(), $query, $tableName)
@@ -35,7 +35,7 @@ class DatabasesController extends Controller
             array_push($arr, get_object_vars($r));
         }
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
         return response()->json([
             'data' => Encoding::toUTF8($arr),
@@ -44,7 +44,7 @@ class DatabasesController extends Controller
 
     public function getSingleData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildSingle(request(), $query, $tableName, $id);
@@ -60,7 +60,7 @@ class DatabasesController extends Controller
 
     public function postData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildCreate(request(), $query, $tableName);
@@ -81,7 +81,7 @@ class DatabasesController extends Controller
             }
 
             $columnId = array_keys($id)[0];
-            $query = $dbRepository->getQuery($tableName, $dbName);
+            $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
             $lastInsert = $query
                 ->where($columnId, $id[$columnId])
                 ->first();
@@ -100,7 +100,7 @@ class DatabasesController extends Controller
 
     public function updateData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildUpdate(request(), $query, $tableName, $id);
@@ -126,7 +126,7 @@ class DatabasesController extends Controller
 
     public function updateFilteringData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildFilteringUpdate(request(), $query, $tableName);
@@ -171,7 +171,7 @@ class DatabasesController extends Controller
 
     public function deleteData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildDelete(request(), $query, $tableName, $id);
@@ -198,7 +198,7 @@ class DatabasesController extends Controller
 
     public function deleteFilteringData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName);
+        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildFilteringDelete(request(), $query, $tableName);
@@ -238,9 +238,13 @@ class DatabasesController extends Controller
                 'database',
                 'charset',
             ])
-            ->where('label', $label)
-            ->where('token', request()->header('Database-Token'))
-            ->firstOrFail();
+            ->where('label', $label);
+
+        if (auth()->user()->role !== 'master') {
+            $db = $db->where('token', request()->header('Database-Token'));
+        }
+
+        $db = $db->firstOrFail();
 
         return response()->json([
             'data' => $db,

@@ -15,8 +15,8 @@ class VerifyUserPermission
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->user()->role !== 'master') {
-            return response()->json(['error' => 'not_found'], 404);
+        if (auth()->user()->role !== 'master' && is_null($request->header('database-token'))) {
+            abort(403);
         }
 
         return $next($request);

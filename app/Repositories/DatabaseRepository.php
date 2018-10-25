@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\NullDatabaseNameException;
 use App\Support\ConnectDatabase;
 
 /**
@@ -26,21 +27,25 @@ class DatabaseRepository
         }
     }
 
-    public function getDatabase($dbName = null, $set = true)
+    public function getDatabase($dbName = null, $set = true, $token = null)
     {
         if (is_null($dbName)) {
             $dbName = $this->dbName;
         }
 
         if (is_null($dbName)) {
-            throw NullDatabaseNameException();
+            throw new NullDatabaseNameException();
         }
 
         $database = \DB::connection($this->connection)
             ->table('dbs')
-            ->where('label', $dbName)
-            ->where('token', request()->header('Database-Token'))
-            ->first();
+            ->where('label', $dbName);
+
+        if (!is_null($token)) {
+            $database = $database->where('token', $token);
+        }
+
+        $database = $database->first();
 
         if ($set) {
             $this->setDatabase($database);
@@ -49,10 +54,10 @@ class DatabaseRepository
         return $database;
     }
 
-    public function unsetDatabase()
+    public function unsetDatabase($dbName)
     {
         return $this->connDB
-                    ->unsetDatabase($this->getDatabase()->driver);
+                    ->unsetDatabase($this->getDatabase($dbName)->driver);
     }
 
     public function getDatabaseInfo($dbName = null)
@@ -85,9 +90,9 @@ class DatabaseRepository
                     ->setDatabase($database->driver, $database);
     }
 
-    public function getQuery($tableName, $dbName = null)
+    public function getQuery($tableName, $dbName = null, $token = null)
     {
-        return \DB::connection($this->getDatabase($dbName)->driver)
+        return \DB::connection($this->getDatabase($dbName, true, $token)->driver)
                                     ->table($tableName);
     }
 }

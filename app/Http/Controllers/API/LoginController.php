@@ -13,7 +13,12 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $credentials = [
+            'email' => $request->header('php-auth-user'),
+            'password' => $request->header('php-auth-pw'),
+        ];
+
+        $validator = Validator::make($credentials, [
             'email' => 'required|string|email|max:255',
             'password' => 'required'
         ]);
@@ -22,16 +27,10 @@ class LoginController extends Controller
             return response()->json($validator->errors());
         }
 
-        $credentials = $request->only('email', 'password');
-
         $user = User::where('email', $credentials['email'])->first();
 
         try {
             if (is_null($user)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
-            }
-
-            if ($user->role !== 'master') {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
 
