@@ -108,7 +108,7 @@ class DatabasesTest extends TestCase
         ]);
 
         $response = $this->json('POST', '/api/databases', $db->toArray());
-        $response->assertStatus(202);
+        $response->assertStatus(201);
 
         $response->assertJsonStructure([
             'data' => [
@@ -173,7 +173,7 @@ class DatabasesTest extends TestCase
             'Accept' => 'application/json',
             'Database-Token' => $db->token,
         ])->json('PATCH', '/api/databases/' . $db->label, ['database' => 'kkk']);
-        $response->assertStatus(200);
+        $response->assertStatus(202);
 
         $this->assertEquals('kkk', $response->getData()->data->database);
 

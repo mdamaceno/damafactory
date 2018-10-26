@@ -42,31 +42,27 @@ class DatabasesController extends Controller
         return $this->response
                     ->setData(Encoding::toUTF8($arr))
                     ->json();
-
-        return response()->json([
-            'data' => Encoding::toUTF8($arr),
-        ]);
     }
 
     public function getSingleData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildSingle(request(), $query, $tableName, $id);
 
         $data = (array) $result->first();
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
-        return response()->json([
-            'data' => Encoding::toUTF8($data),
-        ]);
+        return $this->response
+                    ->setData(Encoding::toUTF8($data))
+                    ->json();
     }
 
     public function postData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildCreate(request(), $query, $tableName);
@@ -76,14 +72,15 @@ class DatabasesController extends Controller
 
         if ($query->insert($paramsToSave)) {
             if (count($id) !== 1) {
-                $this->dbRepository->unsetDatabase();
+                $this->dbRepository->unsetDatabase($dbName);
 
-                return response()->json([
-                    'data' => [
-                        'sucesss' => true,
-                        'last_id' => $id,
-                    ],
-                ]);
+                return $this->response
+                            ->setData([
+                                'success' => true,
+                                'last_id' => $id,
+                            ])
+                            ->setStatusCode(201)
+                            ->json();
             }
 
             $columnId = array_keys($id)[0];
@@ -92,21 +89,22 @@ class DatabasesController extends Controller
                 ->where($columnId, $id[$columnId])
                 ->first();
 
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => Encoding::toUTF8($lastInsert),
-            ]);
+            return $this->response
+                        ->setData(Encoding::toUTF8($lastInsert))
+                        ->setStatusCode(201)
+                        ->json();
         }
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
-        return new DatabaseException('insert');
+        throw new DatabaseException('insert');
     }
 
     public function updateData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildUpdate(request(), $query, $tableName, $id);
@@ -115,24 +113,26 @@ class DatabasesController extends Controller
         $paramsToSave = $result['paramsToSave'];
 
         $columnId = array_keys($id)[0];
+
         if ($query->where($columnId, $id[$columnId])->update($paramsToSave) > 0) {
             $lastUpdate = $query
                 ->where($columnId, $id[$columnId])
                 ->first();
 
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => Encoding::toUTF8($lastUpdate),
-            ]);
+            return $this->response
+                        ->setData(Encoding::toUTF8($lastUpdate))
+                        ->setStatusCode(202)
+                        ->json();
         }
 
-        return new DatabaseException('update');
+        throw new DatabaseException('update');
     }
 
     public function updateFilteringData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildFilteringUpdate(request(), $query, $tableName);
@@ -140,14 +140,15 @@ class DatabasesController extends Controller
         $paramsToSave = $result['paramsToSave'];
 
         if (count($paramsToSave) < 1) {
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => [
-                    'sucesss' => true,
-                    'rows_updated' => 0,
-                ],
-            ]);
+            return $this->response
+                        ->setData([
+                            'sucesss' => true,
+                            'rows_updated' => 0,
+                        ])
+                        ->setStatusCode(202)
+                        ->json();
         }
 
         $query = $result['query'];
@@ -155,29 +156,30 @@ class DatabasesController extends Controller
         $rowsUpdated = $query->update($paramsToSave);
 
         if ($rowsUpdated > 0) {
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => [
-                    'sucesss' => true,
-                    'rows_updated' => $rowsUpdated,
-                ],
-            ]);
+            return $this->response
+                        ->setData([
+                            'sucesss' => true,
+                            'rows_updated' => $rowsUpdated,
+                        ])
+                        ->setStatusCode(202)
+                        ->json();
         }
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
-        return response()->json([
-            'data' => [
-                'sucesss' => false,
-                'rows_updated' => 0,
-            ],
-        ]);
+        return $this->response
+                    ->setData([
+                        'sucesss' => false,
+                        'rows_updated' => 0,
+                    ])
+                    ->json();
     }
 
     public function deleteData($dbName, $tableName, $id)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildDelete(request(), $query, $tableName, $id);
@@ -188,23 +190,24 @@ class DatabasesController extends Controller
         $columnId = array_keys($id)[0];
 
         if ($query->where($columnId, $id[$columnId])->delete() > 0) {
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => [
-                    'sucesss' => true,
-                ],
-            ]);
+            return $this->response
+                        ->setData([
+                            'sucesss' => true,
+                        ])
+                        ->setStatusCode(202)
+                        ->json();
         }
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
-        return new DatabaseException('delete');
+        throw new DatabaseException('delete');
     }
 
     public function deleteFilteringData($dbName, $tableName)
     {
-        $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+        $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
         $result = $this->resultBuilder
             ->buildFilteringDelete(request(), $query, $tableName);
@@ -214,24 +217,26 @@ class DatabasesController extends Controller
         $rowsDeleted = $query->delete();
 
         if ($rowsDeleted > 0) {
-            $this->dbRepository->unsetDatabase();
+            $this->dbRepository->unsetDatabase($dbName);
 
-            return response()->json([
-                'data' => [
-                    'sucesss' => true,
-                    'rows_deleted' => $rowsDeleted,
-                ],
-            ]);
+            return $this->response
+                        ->setData([
+                            'sucesss' => true,
+                            'rows_deleted' => $rowsDeleted,
+                        ])
+                        ->setStatusCode(202)
+                        ->json();
         }
 
-        $this->dbRepository->unsetDatabase();
+        $this->dbRepository->unsetDatabase($dbName);
 
-        return response()->json([
-            'data' => [
-                'sucesss' => false,
-                'rows_deleted' => 0,
-            ],
-        ]);
+        return $this->response
+                    ->setData([
+                        'sucesss' => false,
+                        'rows_deleted' => 0,
+                    ])
+                    ->setStatusCode(202)
+                    ->json();
     }
 
     public function getDatabaseInfo($label)
@@ -252,9 +257,9 @@ class DatabasesController extends Controller
 
         $db = $db->firstOrFail();
 
-        return response()->json([
-            'data' => $db,
-        ]);
+        return $this->response
+                    ->setData($db)
+                    ->json();
     }
 
     public function insertDatabase(InsertDatabaseRequest $request)
@@ -286,9 +291,10 @@ class DatabasesController extends Controller
             ->where('label', $request->get('label'))
             ->first();
 
-        return response()->json([
-            'data' => $db,
-        ], 202);
+        return $this->response
+                    ->setData($db)
+                    ->setStatusCode(201)
+                    ->json();
     }
 
     public function updateDatabase(UpdateDatabaseRequest $request, $label)
@@ -308,9 +314,10 @@ class DatabasesController extends Controller
             'charset'
         ));
 
-        return response()->json([
-            'data' => $db,
-        ], 200);
+        return $this->response
+                    ->setData($db)
+                    ->setStatusCode(202)
+                    ->json();
     }
 
     public function deleteDatabase($label)
@@ -318,8 +325,11 @@ class DatabasesController extends Controller
         $db = Dbs::where('label', $label)
             ->where('token', request()->header('Database-Token'))
             ->firstOrFail();
+
         $db->delete();
 
-        return response()->json([], 204);
+        return $this->response
+                    ->setStatusCode(204)
+                    ->json(true);
     }
 }
