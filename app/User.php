@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuthToken::class);
     }
+
+    public function dbToken()
+    {
+        return $this->hasOne(DBToken::class);
+    }
 }

@@ -16,7 +16,6 @@ class CreateDBTokensTable extends Migration
         Schema::create('db_tokens', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('dbs_id');
-            $table->text('token');
             $table->string('http_permission');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

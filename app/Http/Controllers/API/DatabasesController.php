@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Dbs;
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\DeleteDatabaseRequest;
+use App\Http\Requests\API\GetDatabaseRequest;
 use App\Http\Requests\API\InsertDatabaseRequest;
 use App\Http\Requests\API\UpdateDatabaseRequest;
 use App\Repositories\DatabaseRepository;
@@ -239,7 +241,7 @@ class DatabasesController extends Controller
                     ->json();
     }
 
-    public function getDatabaseInfo($label)
+    public function getDatabaseInfo(GetDatabaseRequest $request, $label)
     {
         $db = Dbs::select([
                 'label',
@@ -320,10 +322,10 @@ class DatabasesController extends Controller
                     ->json();
     }
 
-    public function deleteDatabase($label)
+    public function deleteDatabase(DeleteDatabaseRequest $request, $label)
     {
         $db = Dbs::where('label', $label)
-            ->where('token', request()->header('Database-Token'))
+            ->where('token', $request->header('Database-Token'))
             ->firstOrFail();
 
         $db->delete();

@@ -27,7 +27,8 @@ class DatabasesTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token",
             'Database-Token' => $dbToken,
-        ])->json('GET', '/api/databases/abc');
+        ])
+        ->json('GET', '/api/databases/abc');
 
         $response->assertStatus(200);
 
@@ -71,6 +72,12 @@ class DatabasesTest extends TestCase
             'database' => 'abc',
         ]);
 
+        factory(\App\DBToken::class)->create([
+            'user_id' => $user->id,
+            'dbs_id' => $db->id,
+            'http_permission' => 'get',
+        ]);
+
         $dbToken = $db->token;
 
         $response = $this->withHeaders([
@@ -102,12 +109,16 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $db = factory(\App\Dbs::class)->make([
             'label' => 'abc',
             'database' => 'abc',
         ]);
 
-        $response = $this->json('POST', '/api/databases', $db->toArray());
+        $response = $this
+            ->actingAs($user)
+            ->json('POST', '/api/databases', $db->toArray());
         $response->assertStatus(201);
 
         $response->assertJsonStructure([
@@ -154,11 +165,15 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $db = factory(\App\Dbs::class)->make($inputData);
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
-        ])->json('POST', '/api/databases', $db->toArray());
+        ])
+        ->actingAs($user)
+        ->json('POST', '/api/databases', $db->toArray());
 
         $response->assertStatus(422);
     }
@@ -167,12 +182,17 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $db = factory(\App\Dbs::class)->create();
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
             'Database-Token' => $db->token,
-        ])->json('PATCH', '/api/databases/' . $db->label, ['database' => 'kkk']);
+        ])
+        ->actingAs($user)
+        ->json('PATCH', '/api/databases/' . $db->label, ['database' => 'kkk']);
+
         $response->assertStatus(202);
 
         $this->assertEquals('kkk', $response->getData()->data->database);
@@ -196,11 +216,15 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $db = factory(\App\Dbs::class)->create();
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
-        ])->json('PATCH', '/api/databases/' . $db->label, $inputData);
+        ])
+        ->actingAs($user)
+        ->json('PATCH', '/api/databases/' . $db->label, $inputData);
 
         $response->assertStatus(422);
     }
@@ -209,12 +233,16 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $db = factory(\App\Dbs::class)->create();
 
         $response = $this->withHeaders([
             'Accept' => 'application/json',
             'Database-Token' => $db->token,
-        ])->json('DELETE', '/api/databases/' . $db->label);
+        ])
+        ->actingAs($user)
+        ->json('DELETE', '/api/databases/' . $db->label);
 
         $response->assertStatus(204);
 
@@ -225,10 +253,37 @@ class DatabasesTest extends TestCase
     {
         $this->withoutMiddleware();
 
+        $user = factory(\App\User::class)->create(['role' => 'master']);
+
         $response = $this->withHeaders([
             'Accept' => 'application/json',
-        ])->json('DELETE', '/api/databases/' . 'abc');
+        ])
+        ->actingAs($user)
+        ->json('DELETE', '/api/databases/' . 'abc');
 
         $response->assertStatus(404);
+    }
+
+    public function testNotGetInvalidPermissionWithoutMiddleware()
+    {
+        $this->withoutMiddleware();
+
+        $db = factory(\App\Dbs::class)->create();
+        $user = factory(\App\User::class)->create(['role' => 'db']);
+
+        $dbToken = factory(\App\DBToken::class)->create([
+            'user_id' => $user->id,
+            'dbs_id' => $db->id,
+            'http_permission' => 'post',
+        ]);
+
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'Database-Token' => $db->token,
+        ])
+        ->actingAs($user)
+        ->json('GET', '/api/databases/' . $db->label);
+
+        $response->assertStatus(403);
     }
 }
