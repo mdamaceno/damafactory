@@ -31,14 +31,14 @@ class LoginController extends Controller
 
         try {
             if (is_null($user)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                abort(401);
             }
 
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                abort(401);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            throw new JWTException;
         }
 
         AuthToken::create([
@@ -46,6 +46,8 @@ class LoginController extends Controller
             'token' => $token,
         ]);
 
-        return response()->json(compact('token'));
+        return $this->response()
+                    ->setData(compact('token'))
+                    ->json();
     }
 }

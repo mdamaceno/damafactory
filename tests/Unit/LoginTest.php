@@ -31,7 +31,7 @@ class LoginTest extends TestCase
 
         $response->assertStatus(200);
 
-        $token = $response->getData()->token;
+        $token = $response->getData()->data->token;
 
         $this->assertDatabaseHas('auth_tokens', [
             'user_id' => $user['id'],

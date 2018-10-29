@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Support\ResponseBuilder;
 
 class Handler extends ExceptionHandler
 {
@@ -38,6 +39,11 @@ class Handler extends ExceptionHandler
     public function report(Exception $exception)
     {
         parent::report($exception);
+    }
+
+    private function response()
+    {
+        return new ResponseBuilder();
     }
 
     /**
@@ -74,54 +80,8 @@ class Handler extends ExceptionHandler
             $exception = $this->convertValidationExceptionToResponse($exception, $request);
         }
 
-        return $this->customApiResponse($exception);
-    }
-
-    private function customApiResponse($exception)
-    {
-        if (method_exists($exception, 'getStatusCode')) {
-            $statusCode = $exception->getStatusCode();
-        } else {
-            $statusCode = 500;
-        }
-
-        $response = [
-            'error' => true,
-        ];
-
-        switch ($statusCode) {
-            case 401:
-                $response['message'] = 'Unauthorized';
-                break;
-            case 403:
-                $response['message'] = 'Forbidden';
-                break;
-            case 404:
-                $response['message'] = 'Not Found';
-                break;
-            case 405:
-                $response['message'] = 'Method Not Allowed';
-                break;
-            case 422:
-                $response['message'] = $exception->original['message'];
-                $response['errors'] = $exception->original['errors'];
-                break;
-            default:
-                $response['message'] = 'Whoops, looks like something went wrong. Message: ' . $exception->getMessage();
-                break;
-        }
-
-        if (config('app.debug')) {
-            if (method_exists($exception, 'getTrace')) {
-                $response['trace'] = $exception->getTrace();
-            }
-            if (method_exists($exception, 'getCode')) {
-                $response['code'] = $exception->getCode();
-            }
-        }
-
-        $response['status'] = $statusCode;
-
-        return response()->json($response, $statusCode);
+        return $this->response()
+                    ->withError($exception)
+                    ->json();
     }
 }
