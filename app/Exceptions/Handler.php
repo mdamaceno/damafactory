@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Support\ResponseBuilder;
 
 class Handler extends ExceptionHandler
 {
@@ -13,7 +15,7 @@ class Handler extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        //
+        NotFoundHttpException::class,
     ];
 
     /**
@@ -39,6 +41,11 @@ class Handler extends ExceptionHandler
         parent::report($exception);
     }
 
+    private function response()
+    {
+        return new ResponseBuilder();
+    }
+
     /**
      * Render an exception into an HTTP response.
      *
@@ -46,33 +53,35 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
-        $errorBag = [
-            'message' => 'Sorry, something went wrong!',
-            'status_code' => 500,
-        ];
-
-        if ($e instanceof NoPrimaryKeyException
-            || $e instanceof ManyPrimaryKeysException) {
-            $errorBag['status_code'] = 400;
+        if ($request->wantsJson()) {   //add Accept: application/json in request
+            return $this->handleApiException($request, $exception);
+        } else {
+            $retval = parent::render($request, $exception);
         }
 
-        if ($e instanceof NotFoundException) {
-            $errorBag['status_code'] = 404;
+        return $retval;
+    }
+
+    private function handleApiException($request, Exception $exception)
+    {
+        $exception = $this->prepareException($exception);
+
+        if ($exception instanceof \Illuminate\Http\Exception\HttpResponseException) {
+            $exception = $exception->getResponse();
         }
 
-        if ($e instanceof DatabaseException) {
-            $errorBag['status_code'] = 500;
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            $exception = $this->unauthenticated($request, $exception);
         }
 
-        if (config('app.debug')) {
-            $errorBag['real_message'] = $e->getMessage();
-            $errorBag['file'] = $e->getFile();
-            $errorBag['line'] = $e->getLine();
-            $errorBag['trace'] = $e->getTraceAsString();
+        if ($exception instanceof \Illuminate\Validation\ValidationException) {
+            $exception = $this->convertValidationExceptionToResponse($exception, $request);
         }
 
-        return response()->json(['error' => $errorBag], $errorBag['status_code']);
+        return $this->response()
+                    ->withError($exception)
+                    ->json();
     }
 }

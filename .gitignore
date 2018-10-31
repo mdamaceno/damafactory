@@ -1,8 +1,12 @@
+*.swp
+*.swo
 /node_modules
 /public/hot
 /public/storage
 /storage/*.key
 /vendor
+/database/*.sqlite
+/database/*.sqlite-journal
 /.idea
 /.vscode
 /.vagrant
@@ -11,3 +15,6 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
+.env.testing
+.php_cs.cache
+tags.vendors
