@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\User;
 use JWTAuth;
 use Validator;
-use Response;
 use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller
@@ -18,18 +17,24 @@ class RegisterController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'name' => 'required',
             'password' => 'required',
-            'role' => 'filled|in:db,master',
+            'role' => 'nullable|in:db,master',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            throw new \Illuminate\Validation\ValidationException($validator);
+        }
+
+        $role = 'db';
+
+        if ($request->has('role')) {
+            $role = $request->get('role');
         }
 
         User::create([
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => bcrypt($request->get('password')),
-            'role' => $request->get('role'),
+            'role' => $role,
         ]);
 
         $user = User::where('email', $request->get('email'))->first();
@@ -40,6 +45,9 @@ class RegisterController extends Controller
             'token' => $token,
         ]);
 
-        return Response::json(compact('token'));
+        return $this->response()
+                    ->setData(compact('token'))
+                    ->setStatusCode(201)
+                    ->json();
     }
 }

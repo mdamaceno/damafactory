@@ -24,18 +24,18 @@ class LoginController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            throw new \Illuminate\Validation\ValidationException($validator);
         }
 
         $user = User::where('email', $credentials['email'])->first();
 
         try {
             if (is_null($user)) {
-                abort(401);
+                abort(401, 'Unauthorized');
             }
 
             if (!$token = JWTAuth::attempt($credentials)) {
-                abort(401);
+                abort(401, 'Unauthorized');
             }
         } catch (JWTException $e) {
             throw new JWTException;
