@@ -243,21 +243,14 @@ class DatabasesController extends Controller
 
     public function getDatabaseInfo(GetDatabaseRequest $request, $label)
     {
-        $db = Dbs::select([
-                'label',
-                'driver',
-                'host',
-                'port',
-                'database',
-                'charset',
-            ])
-            ->where('label', $label);
-
-        if (auth()->user()->role !== 'master') {
-            $db = $db->where('token', request()->header('Database-Token'));
-        }
-
-        $db = $db->firstOrFail();
+        $db = $this->getSingleDatabase($label, [
+            'label',
+            'driver',
+            'host',
+            'port',
+            'database',
+            'charset',
+        ]);
 
         return $this->response
                     ->setData($db)
@@ -281,17 +274,15 @@ class DatabasesController extends Controller
         $db->token = Helpers::securerandom();
         $db->save();
 
-        $db = Dbs::select([
-                'label',
-                'driver',
-                'host',
-                'port',
-                'database',
-                'charset',
-                'token',
-            ])
-            ->where('label', $request->get('label'))
-            ->first();
+        $db = $this->getSingleDatabase($request->get('label'), [
+            'label',
+            'driver',
+            'host',
+            'port',
+            'database',
+            'charset',
+            'token',
+        ]);
 
         return $this->response
                     ->setData($db)
@@ -301,9 +292,7 @@ class DatabasesController extends Controller
 
     public function updateDatabase(UpdateDatabaseRequest $request, $label)
     {
-        $db = Dbs::where('label', $label)
-            ->where('token', request()->header('Database-Token'))
-            ->firstOrFail();
+        $db = $this->getSingleDatabase($label);
 
         $db->update($request->only(
             'label',
@@ -324,14 +313,23 @@ class DatabasesController extends Controller
 
     public function deleteDatabase(DeleteDatabaseRequest $request, $label)
     {
-        $db = Dbs::where('label', $label)
-            ->where('token', $request->header('Database-Token'))
-            ->firstOrFail();
+        $db = $this->getSingleDatabase($label);
 
         $db->delete();
 
         return $this->response
                     ->setStatusCode(204)
                     ->json(true);
+    }
+
+    private function getSingleDatabase($id, $fields = ['*'])
+    {
+        $db = Dbs::select($fields)->where('label', $id);
+
+        if (auth()->user()->role !== 'master') {
+            $db = $db->where('token', request()->header('Database-Token'));
+        }
+
+        return $db->firstOrFail();
     }
 }

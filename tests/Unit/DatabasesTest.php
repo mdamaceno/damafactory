@@ -119,6 +119,7 @@ class DatabasesTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->json('POST', '/api/databases', $db->toArray());
+
         $response->assertStatus(201);
 
         $response->assertJsonStructure([
