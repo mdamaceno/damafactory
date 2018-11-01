@@ -5,25 +5,26 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}"></script>
-
     <title>Damafactory</title>
+
+    <link rel="stylesheet" href="{{ mix('assets/admin/css/app.css') }}">
   </head>
   <body>
     <div id="app">
-        @section('sidebar')
-            sidebar
-        @endsection
+        @include('admin.partials.nav')
 
-        <div class="container">
-            @yield('content')
+        <div class="page-content pt-0">
+            @include('admin.partials.sidebar')
+            <div class="content-wrapper">
+                <div class="content">
+                    @yield('content')
+                </div>
+            </div>
         </div>
 	</div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ mix('js/app.js') }}"></script>
+    <script src="{{ mix('assets/admin/js/manifest.js') }}"></script>
+    <script src="{{ mix('assets/admin/js/vendor.js') }}"></script>
+    <script src="{{ mix('assets/admin/js/core.js') }}"></script>
+    @yield('scripts')
   </body>
 </html>

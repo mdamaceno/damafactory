@@ -1,7 +1,6 @@
 {
-    "/js/app.js": "/js/app.js",
-    "/js/bootstrap.js": "/js/bootstrap.js",
-    "/js/popper.js": "/js/popper.js",
-    "/js/jquery.slim.js": "/js/jquery.slim.js",
-    "/css/app.css": "/css/app.css"
+    "/assets/admin/js/core.js": "/assets/admin/js/core.js",
+    "/assets/admin/js/vendor.js": "/assets/admin/js/vendor.js",
+    "/assets/admin/js/manifest.js": "/assets/admin/js/manifest.js",
+    "/assets/admin/css/app.css": "/assets/admin/css/app.css"
 }

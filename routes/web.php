@@ -11,7 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    //return view('welcome');
-    return view('test');
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    Route::get('/', 'AdminController@dashboard');
 });
