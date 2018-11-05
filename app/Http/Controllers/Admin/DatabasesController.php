@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Dbs;
 
-class AdminController extends Controller
+class DatabasesController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    public function dashboard()
+    public function index()
     {
         $filter = \DataFilter::source(new Dbs);
         $filter->add('label', 'Label', 'text');
@@ -26,9 +26,10 @@ class AdminController extends Controller
         $grid->add('database', 'Database', true);
         $grid->add('username', 'Username', true);
         $grid->add('charset', 'Charset', true);
+        $grid->add('prefix', 'Prefix', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
 
-        return view('test', compact('grid', 'filter'));
+        return view('admin.databases.index', compact('grid', 'filter'));
     }
 }

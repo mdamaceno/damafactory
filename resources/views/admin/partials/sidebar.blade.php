@@ -20,7 +20,7 @@
     <!-- Navigation -->
     <div class="card card-sidebar-mobile">
       <div class="card-header header-elements-inline">
-        <h6 class="card-title">Navigation</h6>
+        <h6 class="card-title">{{ __('Menu') }}</h6>
         <div class="header-elements">
           <div class="list-icons">
             <a class="list-icons-item" data-action="collapse"></a>
@@ -31,29 +31,27 @@
       <div class="card-body p-0">
         <ul class="nav nav-sidebar" data-nav-type="accordion">
 
-          <!-- Main -->
-          <li class="nav-item-header pt-0 mt-0"><div class="text-uppercase font-size-xs line-height-xs">Main</div> <i class="icon-menu" title="Main"></i></li>
           <li class="nav-item">
-            <a href="/" class="nav-link active">
+            <a href="{{ url('/admin') }}" class="nav-link active">
               <i class="icon-home4"></i>
               <span>
-                Dashboard
+                {{ __('Dashboard') }}
               </span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link active">
+            <a href="{{ url('/admin/databases') }}" class="nav-link active">
               <i class="icon-stack"></i>
               <span>
-                Databases
+                {{ __('Databases') }}
               </span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link active">
+            <a href="{{ url('/admin/users') }}" class="nav-link active">
               <i class="icon-users"></i>
               <span>
-                Users
+                {{ __('Users') }}
               </span>
             </a>
           </li>
