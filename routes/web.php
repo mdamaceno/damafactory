@@ -14,3 +14,10 @@
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::get('/', 'AdminController@dashboard');
 });
+
+Auth::routes();
+Route::get('/logout', 'Auth\LoginController@logout');
+
+Route::get('/admin', 'Admin\AdminController@dashboard');
+
+Route::get('/home', 'HomeController@index')->name('home');

@@ -1,5 +1,5 @@
   <!-- Main navbar -->
-  <div class="navbar navbar-expand-md navbar-dark bg-grey-800" style="margin-bottom: 1.4em;">
+  <div class="navbar navbar-expand-md navbar-dark bg-indigo-800" style="margin-bottom: 1.4em;">
     <div class="navbar-brand wmin-200">
       <a href="index.html" class="d-inline-block">
         <img src="/assets/admin/images/logo_light.png" alt="">
@@ -25,23 +25,17 @@
       </ul>
 
       <span class="navbar-text ml-md-auto mr-md-3">
-        <span class="badge bg-light shadow-1 text-indigo-700">Active</span>
       </span>
 
       <ul class="navbar-nav">
         <li class="nav-item dropdown dropdown-user">
           <a href="#" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown">
-            <img src="/assets/admin/images/placeholder.jpg" class="rounded-circle" alt="">
-            <span>Victoria</span>
+            <span>{{ auth()->user()->email }}</span>
           </a>
 
           <div class="dropdown-menu dropdown-menu-right">
-            <a href="#" class="dropdown-item"><i class="icon-user-plus"></i> My profile</a>
-            <a href="#" class="dropdown-item"><i class="icon-coins"></i> My balance</a>
-            <a href="#" class="dropdown-item"><i class="icon-comment-discussion"></i> Messages <span class="badge badge-pill bg-blue ml-auto">58</span></a>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item"><i class="icon-cog5"></i> Account settings</a>
-            <a href="#" class="dropdown-item"><i class="icon-switch2"></i> Logout</a>
+            <a href="#" class="dropdown-item"><i class="icon-cog5"></i> {{ __('Account settings') }}</a>
+            <a href="{{ url('/logout') }}" class="dropdown-item"><i class="icon-switch2"></i> {{ __('Logout') }}</a>
           </div>
         </li>
       </ul>

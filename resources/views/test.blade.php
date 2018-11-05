@@ -1,5 +1,13 @@
 @extends('layouts.admin')
 
 @section('content')
-    <example-component></example-component>
+	<div class="card">
+        <div class="card-header header-elements-inline">
+            <h5 class="card-title">Databases</h5>
+        </div>
+        <div class="card-body">
+            {!! $filter !!}
+            {!! $grid !!}
+        </div>
+    </div>
 @endsection

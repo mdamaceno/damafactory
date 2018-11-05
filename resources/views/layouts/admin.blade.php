@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="{{ mix('assets/admin/css/app.css') }}">
   </head>
-  <body>
+  <body class="bg-teal-300">
     <div id="app">
         @include('admin.partials.nav')
 
