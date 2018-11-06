@@ -55,6 +55,14 @@
               </span>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('/admin/auth-tokens') }}" class="nav-link active">
+              <i class="icon-key"></i>
+              <span>
+                {{ __('Auth Tokens') }}
+              </span>
+            </a>
+          </li>
           <!-- /main -->
 
         </ul>

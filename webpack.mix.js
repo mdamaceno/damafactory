@@ -14,6 +14,7 @@ let mix = require('laravel-mix');
 mix
   .styles([
     'resources/admin/icons/icomoon/styles.css',
+    'resources/admin/icons/glyphicon/styles.css',
     'resources/admin/css/bootstrap.min.css',
     'resources/admin/css/bootstrap_limitless.min.css',
     'resources/admin/css/layout.min.css',
@@ -26,10 +27,12 @@ mix
     'resources/admin/js/blockui.min.js',
     'resources/admin/js/ripple.min.js',
     'resources/admin/js/app.js',
+    'resources/admin/js/datatables.min.js',
     'resources/js/app.js',
   ], 'public/assets/admin/js/core.js')
   .extract(['vue'])
   .copyDirectory('resources/admin/icons/icomoon/fonts', 'public/assets/admin/css/fonts')
+  .copyDirectory('resources/admin/icons/glyphicon/fonts', 'public/assets/admin/css/fonts')
   .copyDirectory('resources/admin/images', 'public/assets/admin/images')
   .webpackConfig(webpack => {
     return {

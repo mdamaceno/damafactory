@@ -23,7 +23,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'sanitize' => [
-        'num_characters' => 100, // Number of characters to return during cell value sanitization. 0 = no limit
+        'num_characters' => 50, // Number of characters to return during cell value sanitization. 0 = no limit
     ],
 
     /*

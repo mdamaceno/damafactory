@@ -1,5 +1,5 @@
   <!-- Main navbar -->
-  <div class="navbar navbar-expand-md navbar-dark bg-indigo-800" style="margin-bottom: 1.4em;">
+  <div class="navbar navbar-expand-md navbar-dark bg-slate-800" style="margin-bottom: 1.4em;">
     <div class="navbar-brand wmin-200">
       <a href="index.html" class="d-inline-block">
         <img src="/assets/admin/images/logo_light.png" alt="">

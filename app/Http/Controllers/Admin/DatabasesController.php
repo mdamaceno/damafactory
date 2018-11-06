@@ -16,6 +16,7 @@ class DatabasesController extends Controller
     {
         $filter = \DataFilter::source(new Dbs);
         $filter->add('label', 'Label', 'text');
+        $filter->add('search','Search text', 'text');
         $filter->submit('search');
         $filter->reset('reset');
 

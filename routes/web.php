@@ -15,6 +15,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::get('/', 'DatabasesController@index');
     Route::get('/databases', 'DatabasesController@index');
     Route::get('/users', 'UsersController@index');
+    Route::get('/auth-tokens', 'AuthTokensController@index');
 });
 
 Auth::routes();
