@@ -14,21 +14,22 @@ class UsersController extends Controller
 
     public function index()
     {
-        $filter = \DataFilter::source(new User);
-        $filter->add('label', null, 'text');
-        $filter->submit('search');
-        $filter->reset('reset');
+        $users = User::leftJoin('db_tokens', 'users.id', '=', 'db_tokens.user_id')
+            ->select(\DB::raw('users.*, db_tokens.http_permission'));
+
+        $filter = \DataFilter::source($users);
+        $filter->text('src', 'Search')->scope('freesearch');
+        $filter->build();
 
         $grid = \DataGrid::source($filter);
-        $grid->add('id', 'ID', true);
+        $grid->add('id', '#');
         $grid->add('name', 'Name', true);
         $grid->add('email', 'Email', true);
         $grid->add('role', 'Role', true);
-        $grid->add('dbToken', 'HTTP Permission')->cell(function ($value) {
-            return strtoupper($value->http_permission);
+        $grid->add('http_permission', 'HTTP Permission')->cell(function ($value) {
+            return strtoupper($value);
         });
         $grid->add('created_at', 'Created at', true);
-        $grid->add('updated_at', 'Updated at', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
 

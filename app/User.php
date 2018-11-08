@@ -27,6 +27,12 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function scopeFreesearch($query, $value)
+    {
+        return $query->whereRaw('name like ?', ['%' . $value . '%'])
+                     ->orWhereRaw('email like ?', ['%' . $value . '%']);
+    }
+
     public function authTokens()
     {
         return $this->hasMany(AuthToken::class);

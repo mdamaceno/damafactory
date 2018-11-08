@@ -28,7 +28,7 @@ class AuthTokensController extends Controller
         $grid->add('created_at', 'Created at', true);
         $grid->orderBy('created_at', 'desc');
         $grid->paginate(10);
-        $grid->attributes(["class" => "table table-striped"]);
+        $grid->attributes(['class' => 'table table-hover table-striped']);
 
         return view('admin.auth_tokens.index', compact('grid', 'filter'));
     }
