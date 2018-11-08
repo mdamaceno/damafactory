@@ -30,6 +30,7 @@ class AuthTokensController extends Controller
         $grid->orderBy('created_at', 'desc');
         $grid->paginate(10);
         $grid->attributes(['class' => 'table table-hover table-striped']);
+        $grid->build('vendor.rapyd.datagrid');
 
         return view('admin.auth_tokens.index', compact('grid', 'filter'));
     }
