@@ -2,11 +2,9 @@
 
 @section('content')
 	<div class="card">
-        <div class="card-header header-elements-inline">
-            <h5 class="card-title">{{ __('Databases') }}</h5>
-        </div>
+        @include('admin.partials.card_title', ['title' => __('Databases')])
         <div class="card-body">
-            {!! $filter !!}
+            @include('admin.partials.search_table', ['filter' => $filter, 'url' => '/admin/databases'])
             {!! $grid !!}
         </div>
     </div>

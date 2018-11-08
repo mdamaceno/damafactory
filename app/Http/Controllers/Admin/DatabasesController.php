@@ -14,11 +14,11 @@ class DatabasesController extends Controller
 
     public function index()
     {
-        $filter = \DataFilter::source(new Dbs);
-        $filter->add('label', 'Label', 'text');
-        $filter->add('search','Search text', 'text');
-        $filter->submit('search');
-        $filter->reset('reset');
+        $databases = Dbs::select(\DB::raw('dbs.*'));
+
+        $filter = \DataFilter::source($databases);
+        $filter->text('src', 'Search')->scope('freesearch');
+        $filter->build();
 
         $grid = \DataGrid::source($filter);
         $grid->add('label', 'Label', true);

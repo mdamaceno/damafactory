@@ -22,6 +22,7 @@ class AuthTokensController extends Controller
         $filter->build();
 
         $grid = \DataGrid::source($authTokens);
+        $grid->add('id', '#');
         $grid->add('name', 'Name', 'users.name');
         $grid->add('email', 'Email', 'users.email');
         $grid->add('token', 'Token');
