@@ -15,7 +15,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::get('/', 'DatabasesController@index');
 
     Route::get('/databases', 'DatabasesController@index');
-    Route::get('/databases/edit', 'DatabasesController@edit');
+    Route::match(['get', 'post'], '/databases/edit', 'DatabasesController@edit');
     Route::match(['get', 'post'], '/databases/new', 'DatabasesController@create');
 
     Route::get('/users', 'UsersController@index');

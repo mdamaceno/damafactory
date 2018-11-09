@@ -4,7 +4,7 @@
   <div class="card">
         @include('admin.partials.card_title', ['title' => __('Databases')])
         <div class="card-body">
-            {!! $form !!}
+            @include('admin.databases._form', ['form' => $form])
         </div>
     </div>
 @endsection

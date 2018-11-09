@@ -37,26 +37,16 @@ class DatabasesController extends Controller
 
     public function create()
     {
-        $form = \DataForm::source(new Dbs());
-        $form->label(__('New database'));
-        $form->add('label', 'Label', 'text')->rule('required|min:5');
-        $form->add('driver', 'Driver', 'text')->rule('required|min:5');
-        $form->add('host', 'Host', 'text')->rule('required|min:5');
-        $form->add('port', 'Port', 'text')->rule('required');
-        $form->add('database', 'Database', 'text')->rule('required|min:5');
-        $form->add('username', 'Username', 'text')->rule('required|min:5');
-        $form->add('password', 'Password', 'password')->rule('required|min:5');
-        $form->add('charset', 'Charset', 'text');
-        $form->add('prefix', 'Prefix', 'text');
-        $form->link(url('/admin/databases'), 'Databases', 'TR')->back();
-        $form->submit('Save');
+        $db = new Dbs();
 
+        $form = $this->buildForm($db, __('New database'));
         $form->saved(function () use ($form) {
-            $form->message(__('Record saved'));
-            $form->link(url('admin/databases/new'), __('Back to the form'));
+            return redirect('/admin/databases/new')->with('success', __('Record created successfully'));
         });
 
-        return view('admin.databases.create', compact('form'));
+        $form->build();
+
+        return $form->view('admin.databases.create', compact('form'));
     }
 
     public function edit()
@@ -69,14 +59,31 @@ class DatabasesController extends Controller
 
             $form->deleted(function () use ($form) {
                 $form->message(__('Record deleted'));
+                return redirect('admin/databases')->with('success', __('Record deleted successfully'));
             });
 
-            return redirect('admin/databases')->with('status', __('Record deleted successfully'));
+            return redirect('admin/databases')->with('failed', __('Record not deleted'));
         }
 
         $db = Dbs::find(request()->get('modify'));
-        $form = \DataForm::source($db);
-        $form->label(__('Edit database'));
+
+        $form = $this->buildForm($db, __('Edit database'));
+        $form->saved(function () use ($db) {
+            return redirect('admin/databases/edit?modify=' . $db->id)->with('success', __('Record updated successfully'));
+        });
+        $form->build();
+
+        return $form->view('admin.databases.edit', compact('form'));
+    }
+
+    private function buildForm($model, $label = null)
+    {
+        $form = \DataForm::source($model);
+
+        if (!is_null($label)) {
+            $form->label($label);
+        }
+
         $form->add('label', 'Label', 'text')->rule('required|min:5');
         $form->add('driver', 'Driver', 'text')->rule('required|min:5');
         $form->add('host', 'Host', 'text')->rule('required|min:5');
@@ -89,11 +96,6 @@ class DatabasesController extends Controller
         $form->link(url('/admin/databases'), 'Databases', 'TR')->back();
         $form->submit('Save');
 
-        $form->saved(function () use ($form) {
-            $form->message(__('Record updated'));
-            $form->link(url('admin/databases/edit?modify=' . $db->id), __('Back to the form'));
-        });
-
-        return view('admin.databases.edit', compact('form'));
+        return $form;
     }
 }
