@@ -93,7 +93,6 @@ class DatabasesController extends Controller
         $form->add('password', 'Password', 'password')->rule('required|min:5');
         $form->add('charset', 'Charset', 'text');
         $form->add('prefix', 'Prefix', 'text');
-        $form->link(url('/admin/databases'), 'Databases', 'TR')->back();
         $form->submit('Save');
 
         return $form;

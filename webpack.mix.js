@@ -19,7 +19,8 @@ mix
     'resources/admin/css/bootstrap_limitless.min.css',
     'resources/admin/css/layout.min.css',
     'resources/admin/css/components.min.css',
-    'resources/admin/css/colors.min.css'
+    'resources/admin/css/colors.min.css',
+    'resources/admin/css/custom.css'
   ], 'public/assets/admin/css/app.css')
   .js([
     'resources/admin/js/jquery.min.js',

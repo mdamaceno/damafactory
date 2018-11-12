@@ -9,6 +9,7 @@
                     {{ session('status') }}
                 </div>
             @endif
+            <a href="{{ url('/admin/databases/new') }}" class="btn btn-sm btn-primary">{{__('New database')}}</a>
             @include('admin.partials.search_table', ['filter' => $filter, 'url' => '/admin/databases'])
             {!! $grid !!}
         </div>
