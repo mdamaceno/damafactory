@@ -28,8 +28,9 @@ mix
     'resources/admin/js/blockui.min.js',
     'resources/admin/js/ripple.min.js',
     'resources/admin/js/app.js',
-    'resources/admin/js/datatables.min.js',
     'resources/js/app.js',
+    'resources/admin/js/custom.js',
+    'node_modules/sweetalert/dist/sweetalert.min.js',
   ], 'public/assets/admin/js/core.js')
   .extract(['vue'])
   .copyDirectory('resources/admin/icons/icomoon/fonts', 'public/assets/admin/css/fonts')

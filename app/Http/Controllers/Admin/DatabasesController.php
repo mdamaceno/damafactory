@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Dbs;
+use Alert;
 
 class DatabasesController extends Controller
 {
@@ -22,12 +23,20 @@ class DatabasesController extends Controller
 
         $grid = \DataGrid::source($filter);
         $grid->add('label', 'Label', true);
+        $grid->add('driver', 'Driver', true)->cell(function ($value) {
+            switch ($value) {
+                case 0:
+                    return 'firebird';
+                case 1:
+                    return 'mysql';
+                default:
+                    return null;
+            }
+        });
         $grid->add('host', 'Host', true);
         $grid->add('port', 'Port', true);
         $grid->add('database', 'Database', true);
         $grid->add('username', 'Username', true);
-        $grid->add('charset', 'Charset', true);
-        $grid->add('prefix', 'Prefix', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
         $grid->edit('/admin/databases/edit', null, 'modify|delete');
@@ -41,7 +50,8 @@ class DatabasesController extends Controller
 
         $form = $this->buildForm($db, __('New database'));
         $form->saved(function () use ($form) {
-            return redirect('/admin/databases/new')->with('success', __('Record created successfully'));
+            alert()->success(__('Record created successfully'));
+            return redirect('/admin/databases/new');
         });
 
         $form->build();
@@ -53,23 +63,22 @@ class DatabasesController extends Controller
     {
         if (request()->has('delete')) {
             $db = Dbs::find(request()->get('delete'));
-            $db->delete();
 
-            $form = \DataForm::source($db);
-
-            $form->deleted(function () use ($form) {
-                $form->message(__('Record deleted'));
-                return redirect('admin/databases')->with('success', __('Record deleted successfully'));
-            });
-
-            return redirect('admin/databases')->with('failed', __('Record not deleted'));
+            if ($db->delete()) {
+                alert()->success(__('Record deleted successfully'));
+                return redirect('admin/databases');
+            } else {
+                alert()->error(__('Record not deleted'));
+                return redirect('admin/databases');
+            }
         }
 
         $db = Dbs::find(request()->get('modify'));
 
         $form = $this->buildForm($db, __('Edit database'));
         $form->saved(function () use ($db) {
-            return redirect('admin/databases/edit?modify=' . $db->id)->with('success', __('Record updated successfully'));
+            alert()->success(__('Record updated successfully'));
+            return redirect('admin/databases/edit?modify=' . $db->id);
         });
         $form->build();
 
@@ -84,15 +93,21 @@ class DatabasesController extends Controller
             $form->label($label);
         }
 
-        $form->add('label', 'Label', 'text')->rule('required|min:5');
-        $form->add('driver', 'Driver', 'text')->rule('required|min:5');
-        $form->add('host', 'Host', 'text')->rule('required|min:5');
-        $form->add('port', 'Port', 'text')->rule('required');
-        $form->add('database', 'Database', 'text')->rule('required|min:5');
-        $form->add('username', 'Username', 'text')->rule('required|min:5');
-        $form->add('password', 'Password', 'password')->rule('required|min:5');
+        $form->add('label', 'Label', 'text');
+        if (request()->getMethod() === 'POST' && request()->has('modify')) {
+            $form->rule('required|between:3,255|unique:dbs,label,' . $form->model->label);
+        } else {
+            $form->rule('required|between:3,255|unique:dbs,label');
+        }
+        $form->add('driver', 'Driver', 'select')->options(['firebird', 'mysql']);
+        $form->add('host', 'Host', 'text')->rule('required');
+        $form->add('port', 'Port', 'text')->rule('required|numeric');
+        $form->add('database', 'Database', 'text')->rule('required|max:255');
+        $form->add('username', 'Username', 'text')->rule('required|max:255');
+        $form->add('password', 'Password', 'text')->rule('nullable|min:5');
         $form->add('charset', 'Charset', 'text');
         $form->add('prefix', 'Prefix', 'text');
+
         $form->submit('Save');
 
         return $form;

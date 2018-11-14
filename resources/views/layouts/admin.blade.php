@@ -25,6 +25,18 @@
     <script src="{{ mix('assets/admin/js/manifest.js') }}"></script>
     <script src="{{ mix('assets/admin/js/vendor.js') }}"></script>
     <script src="{{ mix('assets/admin/js/core.js') }}"></script>
+    @include('sweet::alert')
     @yield('scripts')
+    <script>
+        function hidePwd(el, id) {
+            if (el.className === 'icon-eye') {
+                el.className = 'icon-eye-blocked';
+                document.getElementById(id).type="password";
+            } else {
+                el.className = 'icon-eye';
+                document.getElementById(id).type="text";
+            }
+        }
+    </script>
   </body>
 </html>
