@@ -23,16 +23,7 @@ class DatabasesController extends Controller
 
         $grid = \DataGrid::source($filter);
         $grid->add('label', 'Label', true);
-        $grid->add('driver', 'Driver', true)->cell(function ($value) {
-            switch ($value) {
-                case 0:
-                    return 'firebird';
-                case 1:
-                    return 'mysql';
-                default:
-                    return null;
-            }
-        });
+        $grid->add('driver', 'Driver', true);
         $grid->add('host', 'Host', true);
         $grid->add('port', 'Port', true);
         $grid->add('database', 'Database', true);
@@ -67,10 +58,10 @@ class DatabasesController extends Controller
             if ($db->delete()) {
                 alert()->success(__('Record deleted successfully'));
                 return redirect('admin/databases');
-            } else {
-                alert()->error(__('Record not deleted'));
-                return redirect('admin/databases');
             }
+
+            alert()->error(__('Record not deleted'));
+            return redirect('admin/databases');
         }
 
         $db = Dbs::find(request()->get('modify'));
@@ -99,7 +90,10 @@ class DatabasesController extends Controller
         } else {
             $form->rule('required|between:3,255|unique:dbs,label');
         }
-        $form->add('driver', 'Driver', 'select')->options(['firebird', 'mysql']);
+        $form->add('driver', 'Driver', 'select')->options([
+            'firebird' => 'firebird',
+            'mysql' => 'mysql',
+        ]);
         $form->add('host', 'Host', 'text')->rule('required');
         $form->add('port', 'Port', 'text')->rule('required|numeric');
         $form->add('database', 'Database', 'text')->rule('required|max:255');

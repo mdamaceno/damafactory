@@ -31,30 +31,12 @@
         {!! $form->render('prefix') !!}
     </div>
 </div>
-<div class="row">
+<div class="form-group row">
     <div class="col-lg-4">
         {!! $form->render('username') !!}
     </div>
     <div class="col-lg-4">
-        <div id="div_{!! $form->field('password')->name !!}" class="@if ($form->field('password')->has_error) has-error @endif form-group form-group-feedback form-group-feedback-right">
-
-                <label for="{!! $form->field('password')->name !!}">{!! $form->field('password')->label.$form->field('password')->star !!}</label>
-                <input type="password" id="password" name="password" value="{!! $form->field('password')->value !!}" class="form-control">
-
-                <div class="form-control-feedback">
-                    <i onclick="hidePwd(this, 'password')" class="icon-eye-blocked"></i>
-                </div>
-
-                @if(count($form->field('password')->messages))
-                    @foreach ($form->field('password')->messages as $message)
-                    <span class="help-block">
-                        <span class="glyphicon glyphicon-warning-sign"></span>
-                        {!! $message !!}
-                    </span>
-                    @endforeach
-                @endif
-
-        </div>
+        @include('admin.partials.password_field', ['field' => 'password', 'old' => true])
     </div>
 </div>
 {!! $form->footer !!}

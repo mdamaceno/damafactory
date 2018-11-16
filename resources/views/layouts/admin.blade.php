@@ -37,6 +37,27 @@
                 document.getElementById(id).type="text";
             }
         }
+        $("a[title='Delete']").click(function (el) {
+            el.preventDefault();
+            swal({
+                icon: 'warning',
+                title: 'Quer mesmo remover este registro?',
+                buttons: {
+                    cancel: {
+                        text: 'Não',
+                        visible: true,
+                    },
+                    confirm: {
+                        text: 'Sim, eu quero!',
+                        className: 'bg-warning',
+                    },
+                }
+            }).then((result) => {
+                if (result) {
+                    window.location.href = el.currentTarget.href;
+                }
+            });
+        });
     </script>
   </body>
 </html>

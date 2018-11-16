@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -41,10 +42,13 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
+        if (\Auth::attempt($credentials)) {
+            dd('here');
             // Authentication passed...
             return redirect()->intended('dashboard');
         }
+
+        return redirect()->back()->withErrors('The Message');
     }
 
     public function logout()

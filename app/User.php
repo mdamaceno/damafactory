@@ -42,4 +42,21 @@ class User extends Authenticatable
     {
         return $this->hasOne(DBToken::class);
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->password = bcrypt($user->password);
+        });
+
+        static::updating(function ($user) {
+            if (!is_null($user->password)) {
+                $user->password = bcrypt($user->password);
+            } else {
+                $user->password = $user->getOriginal()['password'];
+            }
+        });
+    }
 }
