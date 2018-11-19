@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Database\PostRequest;
 use App\Dbs;
 use Alert;
 
@@ -35,7 +36,7 @@ class DatabasesController extends Controller
         return view('admin.databases.index', compact('grid', 'filter'));
     }
 
-    public function create()
+    public function create(PostRequest $request)
     {
         $db = new Dbs();
 
@@ -50,7 +51,7 @@ class DatabasesController extends Controller
         return $form->view('admin.databases.create', compact('form'));
     }
 
-    public function edit()
+    public function edit(PostRequest $request)
     {
         if (request()->has('delete')) {
             $db = Dbs::find(request()->get('delete'));
@@ -84,21 +85,26 @@ class DatabasesController extends Controller
             $form->label($label);
         }
 
-        $form->add('label', 'Label', 'text');
-        if (request()->getMethod() === 'POST' && request()->has('modify')) {
-            $form->rule('required|between:3,255|unique:dbs,label,' . $form->model->label);
-        } else {
-            $form->rule('required|between:3,255|unique:dbs,label');
+        if (!is_null($model->id)) {
+            $form->set('id', $model->id);
         }
+
+        $form->add('label', 'Label', 'text');
+        /* if (request()->getMethod() === 'POST' && request()->has('modify')) { */
+        /*     $form->rule('required|between:3,255|unique:dbs,label,' . $form->model->label); */
+        /* } else { */
+        /*     $form->rule('required|between:3,255|unique:dbs,label'); */
+        /* } */
+
         $form->add('driver', 'Driver', 'select')->options([
             'firebird' => 'firebird',
             'mysql' => 'mysql',
         ]);
-        $form->add('host', 'Host', 'text')->rule('required');
-        $form->add('port', 'Port', 'text')->rule('required|numeric');
-        $form->add('database', 'Database', 'text')->rule('required|max:255');
-        $form->add('username', 'Username', 'text')->rule('required|max:255');
-        $form->add('password', 'Password', 'text')->rule('nullable|min:5');
+        $form->add('host', 'Host', 'text');
+        $form->add('port', 'Port', 'text');
+        $form->add('database', 'Database', 'text');
+        $form->add('username', 'Username', 'text');
+        $form->add('password', 'Password', 'text');
         $form->add('charset', 'Charset', 'text');
         $form->add('prefix', 'Prefix', 'text');
 

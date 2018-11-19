@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="card">
-      @include('admin.partials.card_title', ['title' => __('Databases'), 'link' => url('/admin/databases')])
+        @include('admin.partials.card_title', ['title' => __('Databases'), 'link' => url('/admin/databases')])
         <div class="card-body">
             @include('admin.databases._form', ['form' => $form])
         </div>
