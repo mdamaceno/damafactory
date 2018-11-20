@@ -52,10 +52,10 @@ class User extends Authenticatable
         });
 
         static::updating(function ($user) {
-            if (!is_null($user->password)) {
+            if (!is_null($user->password) && trim($user->password) !== '') {
                 $user->password = bcrypt($user->password);
             } else {
-                $user->password = $user->getOriginal()['password'];
+                unset($user->password);
             }
         });
     }

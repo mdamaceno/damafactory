@@ -46,6 +46,7 @@
     </div>
     <div class="col-lg-4">
         @include('admin.partials.password_field', ['field' => 'password', 'old' => true])
+        @include('admin.partials.input_error', ['name' => 'password'])
     </div>
 </div>
 {!! $form->footer !!}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\User\PostRequest;
 use App\User;
 
 class UsersController extends Controller
@@ -37,7 +38,7 @@ class UsersController extends Controller
         return view('admin.users.index', compact('grid', 'filter'));
     }
 
-    public function create()
+    public function create(PostRequest $request)
     {
         $model = new User();
 
@@ -52,7 +53,7 @@ class UsersController extends Controller
         return $form->view('admin.users.create', compact('form'));
     }
 
-    public function edit()
+    public function edit(PostRequest $request)
     {
         if (request()->has('delete')) {
             $model = User::find(request()->get('delete'));
@@ -60,10 +61,10 @@ class UsersController extends Controller
             if ($model->delete()) {
                 alert()->success(__('Record deleted successfully'));
                 return redirect('admin/users');
-            } else {
-                alert()->error(__('Record not deleted'));
-                return redirect('admin/users');
             }
+
+            alert()->error(__('Record not deleted'));
+            return redirect('admin/users');
         }
 
         $model = User::find(request()->get('modify'));
@@ -87,22 +88,12 @@ class UsersController extends Controller
         }
 
         $form->add('email', 'Email', 'text');
-        if (request()->getMethod() === 'POST' && request()->has('modify')) {
-            $form->rule('required|email|unique:dbs,email,' . $form->model->email);
-        } else {
-            $form->rule('required|email|unique:dbs,email');
-        }
         $form->add('role', 'Role', 'select')->options([
             'db' => 'db',
             'master' => 'master',
         ]);
-        $form->add('name', 'Name', 'text')->rule('required|max:255');
-
-        if (request()->has('modify')) {
-            $form->add('password', 'Password', 'text')->rule('nullable|min:5|max:255');
-        } else {
-            $form->add('password', 'Password', 'text')->rule('required|min:5|max:255');
-        }
+        $form->add('name', 'Name', 'text');
+        $form->add('password', 'Password', 'text');
 
         $form->submit('Save');
 
