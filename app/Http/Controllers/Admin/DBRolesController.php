@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DBRole;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\User\PostRequest;
-use App\User;
+use App\Http\Requests\Admin\DBRole\PostRequest;
 
-class UsersController extends Controller
+class DBRolesController extends Controller
 {
     public function __construct()
     {
@@ -15,64 +15,63 @@ class UsersController extends Controller
 
     public function index()
     {
-        $users = User::select(\DB::raw('users.*'));
+        $permissions = DBRole::select(\DB::raw('db_roles.*'));
 
-        $filter = \DataFilter::source($users);
+        $filter = \DataFilter::source($permissions);
         $filter->text('src', 'Search')->scope('freesearch');
         $filter->build();
 
         $grid = \DataGrid::source($filter);
         $grid->add('id', '#');
         $grid->add('name', 'Name', true);
-        $grid->add('email', 'Email', true);
-        $grid->add('role', 'Role', true);
+        $grid->add('http_permission', 'HTTP Permission', true);
         $grid->add('created_at', 'Created at', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
-        $grid->edit('/admin/users/edit', null, 'modify|delete');
+        $grid->edit('/admin/permissions/edit', null, 'modify|delete');
 
-        return view('admin.users.index', compact('grid', 'filter'));
+        return view('admin.permissions.index', compact('grid', 'filter'));
     }
 
     public function create(PostRequest $request)
     {
-        $model = new User();
+        $model = new DBRole();
 
-        $form = $this->buildForm($model, __('New user'));
+        $form = $this->buildForm($model, __('New permission'));
         $form->saved(function () use ($form) {
             alert()->success(__('Record created successfully'));
-            return redirect('/admin/users/new');
+            return redirect('/admin/permissions/new');
         });
 
         $form->build();
 
-        return $form->view('admin.users.create', compact('form'));
+        return $form->view('admin.permissions.create', compact('form'));
     }
 
     public function edit(PostRequest $request)
     {
         if (request()->has('delete')) {
-            $model = User::find(request()->get('delete'));
+            $model = DBRole::find(request()->get('delete'));
 
             if ($model->delete()) {
                 alert()->success(__('Record deleted successfully'));
-                return redirect('admin/users');
+                return redirect('admin/permissions');
             }
 
             alert()->error(__('Record not deleted'));
-            return redirect('admin/users');
+            return redirect('admin/permissions');
         }
 
-        $model = User::find(request()->get('modify'));
+        $model = DBRole::find(request()->get('modify'));
 
-        $form = $this->buildForm($model, __('Edit user'));
+        $form = $this->buildForm($model, __('Edit permission'));
         $form->saved(function () use ($model, $request) {
             alert()->success(__('Record updated successfully'));
-            return redirect('admin/users/edit?modify=' . $model->id);
+            return redirect('admin/permissions/edit?modify=' . $model->id);
         });
         $form->build();
 
-        return $form->view('admin.users.edit', compact('form'));
+        return $form->view('admin.permissions.edit', compact('form'));
     }
 
     private function buildForm($model, $label = null)
@@ -83,13 +82,14 @@ class UsersController extends Controller
             $form->label($label);
         }
 
-        $form->add('email', 'Email', 'text');
-        $form->add('role', 'Role', 'select')->options([
-            'db' => 'db',
-            'master' => 'master',
-        ]);
         $form->add('name', 'Name', 'text');
-        $form->add('password', 'Password', 'text');
+        $form->add('http_permission', 'HTTP Permission', 'checkboxgroup')->options([
+            'get' => 'GET',
+            'post' => 'POST',
+            'put' => 'PUT/PATCH',
+            'delete' => 'DELETE',
+        ]);
+        $form->add('active', 'Active', 'checkbox');
 
         $form->submit('Save');
 

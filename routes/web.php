@@ -22,6 +22,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::match(['get', 'post'], '/users/edit', 'UsersController@edit');
     Route::match(['get', 'post'], '/users/new', 'UsersController@create');
 
+    Route::get('/permissions', 'DBRolesController@index');
+    Route::match(['get', 'post'], '/permissions/edit', 'DBRolesController@edit');
+    Route::match(['get', 'post'], '/permissions/new', 'DBRolesController@create');
+
     Route::get('/auth-tokens', 'AuthTokensController@index');
 });
 

@@ -1,5 +1,5 @@
 <!-- Main sidebar -->
-<div class="sidebar sidebar-light sidebar-main sidebar-expand-md align-self-start">
+<div class="sidebar sidebar-main sidebar-expand-md align-self-start" style="box-shadow: none">
 
   <!-- Sidebar mobile toggler -->
   <div class="sidebar-mobile-toggler text-center">
@@ -19,20 +19,11 @@
 
     <!-- Navigation -->
     <div class="card card-sidebar-mobile">
-      <div class="card-header header-elements-inline">
-        <h6 class="card-title">{{ __('Menu') }}</h6>
-        <div class="header-elements">
-          <div class="list-icons">
-            <a class="list-icons-item" data-action="collapse"></a>
-          </div>
-        </div>
-      </div>
-
       <div class="card-body p-0">
         <ul class="nav nav-sidebar" data-nav-type="accordion">
 
           <li class="nav-item">
-            <a href="{{ url('/admin') }}" class="nav-link active">
+            <a href="{{ url('/admin') }}" class="nav-link text-grey-300 active">
               <i class="icon-home4"></i>
               <span>
                 {{ __('Dashboard') }}
@@ -40,7 +31,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/databases') }}" class="nav-link active">
+            <a href="{{ url('/admin/databases') }}" class="nav-link text-grey-300 active">
               <i class="icon-stack"></i>
               <span>
                 {{ __('Databases') }}
@@ -48,7 +39,15 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/users') }}" class="nav-link active">
+            <a href="{{ url('/admin/permissions') }}" class="nav-link text-grey-300 active">
+              <i class="icon-people"></i>
+              <span>
+                {{ __('Permissions') }}
+              </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/admin/users') }}" class="nav-link text-grey-300 active">
               <i class="icon-users"></i>
               <span>
                 {{ __('Users') }}
@@ -56,7 +55,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/auth-tokens') }}" class="nav-link active">
+            <a href="{{ url('/admin/auth-tokens') }}" class="nav-link text-grey-300 active">
               <i class="icon-key"></i>
               <span>
                 {{ __('Auth Tokens') }}

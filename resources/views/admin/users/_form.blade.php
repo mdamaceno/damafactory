@@ -19,8 +19,6 @@
         {!! $form->render('role') !!}
         @include('admin.partials.input_error', ['name' => 'role'])
     </div>
-</div>
-<div class="form-group row">
     <div class="col-lg-4">
         @include('admin.partials.password_field', ['field' => 'password'])
         @include('admin.partials.input_error', ['name' => 'password'])

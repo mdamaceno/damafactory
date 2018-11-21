@@ -1,5 +1,5 @@
   <!-- Main navbar -->
-  <div class="navbar navbar-expand-md navbar-dark bg-slate-800" style="margin-bottom: 1.4em;">
+  <div class="navbar navbar-expand-md " style="margin-bottom: 1.4em;">
     <div class="navbar-brand wmin-200">
       <a href="index.html" class="d-inline-block">
         <img src="/assets/admin/images/logo_light.png" alt="">
@@ -28,15 +28,14 @@
       </span>
 
       <ul class="navbar-nav">
-        <li class="nav-item dropdown dropdown-user">
-          <a href="#" class="navbar-nav-link dropdown-toggle" data-toggle="dropdown">
-            <span>{{ auth()->user()->email }}</span>
-          </a>
-
-          <div class="dropdown-menu dropdown-menu-right">
-            <a href="#" class="dropdown-item"><i class="icon-cog5"></i> {{ __('Account settings') }}</a>
-            <a href="{{ url('/logout') }}" class="dropdown-item"><i class="icon-switch2"></i> {{ __('Logout') }}</a>
-          </div>
+        <li class="nav-item">
+            <a href="javascript:void(0)" class="btn text-grey-300">{{ auth()->user()->email }}</i></a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('/admin/users/edit?modify=' . auth()->user()->id) }}" class="btn text-grey-300"><i class="icon-cog"></i></a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('/logout') }}" class="btn text-danger"><i class="icon-switch2"></i></a>
         </li>
       </ul>
     </div>
