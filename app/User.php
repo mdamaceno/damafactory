@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->hasMany(AuthToken::class);
     }
 
+    public function dbRoles()
+    {
+        return $this->belongsToMany(DBRole::class, 'db_roles_users', 'db_role_id', 'user_id');
+    }
+
     public static function boot()
     {
         parent::boot();

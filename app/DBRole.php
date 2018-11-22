@@ -19,4 +19,9 @@ class DBRole extends Model
         return $query->whereRaw('name like ?', ['%' . $value . '%'])
                      ->orWhereRaw('http_permission like ?', ['%' . $value . '%']);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'db_roles_users', 'user_id', 'db_role_id');
+    }
 }
