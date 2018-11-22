@@ -24,4 +24,14 @@
         @include('admin.partials.input_error', ['name' => 'password'])
     </div>
 </div>
+<div class="form-group row" id="el__db-permission">
+    <div class="col-lg-4">
+        {!! $form->render('db_permission') !!}
+        @include('admin.partials.input_error', ['name' => 'db_permission'])
+    </div>
+</div>
 {!! $form->footer !!}
+
+@section('scripts')
+
+@endsection

@@ -15,7 +15,7 @@ class CreateDBRolesTable extends Migration
     {
         Schema::create('db_roles', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->string('http_permission')->default('all');
             $table->boolean('active')->default(false);
             $table->timestamps();

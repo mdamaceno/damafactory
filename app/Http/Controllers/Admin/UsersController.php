@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DBRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\PostRequest;
 use App\User;
@@ -90,6 +91,8 @@ class UsersController extends Controller
         ]);
         $form->add('name', 'Name', 'text');
         $form->add('password', 'Password', 'text');
+        $form->add('db_permission', 'Database Permission', 'select')
+             ->options(DBRole::pluck('name', 'id')->all());
 
         $form->submit('Save');
 

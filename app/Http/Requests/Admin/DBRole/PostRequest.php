@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\DBRole;
 
 use App\Http\Requests\Admin\BaseRequest;
+use Illuminate\Validation\Rule;
 
 class PostRequest extends BaseRequest
 {
@@ -15,7 +16,7 @@ class PostRequest extends BaseRequest
     {
         if ($this->has('modify') && $this->getMethod() === 'POST') {
             return [
-                'name' => 'filled|max:50',
+                'name' => 'filled|max:50|' . Rule::unique('db_roles')->ignore($this->name, 'name'),
                 'http_permission' => 'nullable',
                 'active' => 'filled|boolean',
             ];
@@ -23,7 +24,7 @@ class PostRequest extends BaseRequest
 
         if ($this->getMethod() === 'POST') {
             return [
-                'name' => 'required|max:50',
+                'name' => 'required|max:50|unique:db_roles,name',
                 'http_permission' => 'nullable',
                 'active' => 'required|boolean',
             ];
