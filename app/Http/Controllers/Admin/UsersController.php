@@ -67,7 +67,18 @@ class UsersController extends Controller
         $model = User::find(request()->get('modify'));
 
         $form = $this->buildForm($model, __('Edit user'));
+
         $form->saved(function () use ($model, $request) {
+            if ($request->has('db_permission')) {
+                \DB::table('db_roles_users')->where('user_id', $model->id)->delete();
+                if ($model->role !== 'master') {
+                    \DB::table('db_roles_users')->insert([
+                        'user_id' => $model->id,
+                        'db_role_id' => $request->get('db_permission'),
+                    ]);
+                }
+            }
+
             alert()->success(__('Record updated successfully'));
             return redirect('admin/users/edit?modify=' . $model->id);
         });
@@ -91,8 +102,14 @@ class UsersController extends Controller
         ]);
         $form->add('name', 'Name', 'text');
         $form->add('password', 'Password', 'text');
+
+        $permissions = DBRole::pluck('name', 'id');
+
         $form->add('db_permission', 'Database Permission', 'select')
-             ->options(DBRole::pluck('name', 'id')->all());
+             ->options($permissions);
+        if ($model->role !== 'master') {
+            $form->updateValue($model->dbRoles()->first()->id);
+        }
 
         $form->submit('Save');
 

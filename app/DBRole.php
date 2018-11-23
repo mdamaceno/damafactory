@@ -22,6 +22,6 @@ class DBRole extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'db_roles_users', 'user_id', 'db_role_id');
+        return $this->belongsToMany(User::class, 'db_roles_users', 'db_role_id', 'user_id');
     }
 }

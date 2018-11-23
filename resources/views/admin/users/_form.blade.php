@@ -33,5 +33,20 @@
 {!! $form->footer !!}
 
 @section('scripts')
+<script>
+let divPermissionSelectEl = $('#el__db-permission');
+let selectRoleEl = $('#role');
 
+let selectPermission = function () {
+    if (selectRoleEl.val() === 'master') {
+        divPermissionSelectEl.css('display', 'none');
+    } else {
+        divPermissionSelectEl.css('display', 'block');
+    }
+}
+
+selectPermission()
+
+$(selectRoleEl).change(selectPermission);
+</script>
 @endsection

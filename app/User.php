@@ -15,7 +15,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role',
+        'name',
+        'email',
+        'password',
+        'role',
+        'db_permission',
     ];
 
     /**
@@ -40,7 +44,7 @@ class User extends Authenticatable
 
     public function dbRoles()
     {
-        return $this->belongsToMany(DBRole::class, 'db_roles_users', 'db_role_id', 'user_id');
+        return $this->belongsToMany(DBRole::class, 'db_roles_users', 'user_id', 'db_role_id');
     }
 
     public static function boot()
