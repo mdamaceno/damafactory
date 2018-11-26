@@ -10,7 +10,7 @@ class Permission
             return true;
         }
 
-        $permission = @$user->dbRoles()->first()->http_permission;
+        $permission = @$user->dbRoles()->where('active', true)->first()->http_permission;
 
         if (!$permission) {
             return false;
