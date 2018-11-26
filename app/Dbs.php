@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Support\Helpers;
 use Illuminate\Database\Eloquent\Model;
 
 class Dbs extends Model
@@ -17,6 +18,7 @@ class Dbs extends Model
         'password',
         'database',
         'charset',
+        'token',
     ];
 
     public function scopeFreesearch($query, $value)
@@ -27,5 +29,14 @@ class Dbs extends Model
                      ->orWhereRaw('database like ?', ['%' . $value . '%'])
                      ->orWhereRaw('username like ?', ['%' . $value . '%'])
                      ->orWhereRaw('charset like ?', ['%' . $value . '%']);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($db) {
+            $db->token = Helpers::securerandom();
+        });
     }
 }

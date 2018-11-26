@@ -49,4 +49,14 @@
         @include('admin.partials.input_error', ['name' => 'password'])
     </div>
 </div>
+<div class="form-group row">
+    <div class="col-lg-8">
+        {!! $form->render('token') !!}
+        @include('admin.partials.input_error', ['name' => 'token'])
+    </div>
+    <div class="col-lg-4">
+        {!! $form->render('update_token') !!}
+        @include('admin.partials.input_error', ['name' => 'update_token'])
+    </div>
+</div>
 {!! $form->footer !!}

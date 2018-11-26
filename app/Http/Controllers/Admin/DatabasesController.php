@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Alert;
+use App\Dbs;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Database\PostRequest;
-use App\Dbs;
-use Alert;
+use App\Support\Helpers;
 
 class DatabasesController extends Controller
 {
@@ -68,6 +69,11 @@ class DatabasesController extends Controller
         $db = Dbs::find(request()->get('modify'));
 
         $form = $this->buildForm($db, __('Edit database'));
+
+        if ($request->has('update_token') && $request->get('update_token')) {
+            $db->token = Helpers::securerandom();
+        }
+
         $form->saved(function () use ($db) {
             alert()->success(__('Record updated successfully'));
             return redirect('admin/databases/edit?modify=' . $db->id);
@@ -90,12 +96,6 @@ class DatabasesController extends Controller
         }
 
         $form->add('label', 'Label', 'text');
-        /* if (request()->getMethod() === 'POST' && request()->has('modify')) { */
-        /*     $form->rule('required|between:3,255|unique:dbs,label,' . $form->model->label); */
-        /* } else { */
-        /*     $form->rule('required|between:3,255|unique:dbs,label'); */
-        /* } */
-
         $form->add('driver', 'Driver', 'select')->options([
             'firebird' => 'firebird',
             'mysql' => 'mysql',
@@ -107,6 +107,8 @@ class DatabasesController extends Controller
         $form->add('password', 'Password', 'text');
         $form->add('charset', 'Charset', 'text');
         $form->add('prefix', 'Prefix', 'text');
+        $form->add('token', 'Token', 'text')->mode('readonly');
+        $form->add('update_token', 'Update token', 'checkbox');
 
         $form->submit('Save');
 
