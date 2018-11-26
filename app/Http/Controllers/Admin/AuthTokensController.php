@@ -10,6 +10,7 @@ class AuthTokensController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('view.permission');
     }
 
     public function index()
