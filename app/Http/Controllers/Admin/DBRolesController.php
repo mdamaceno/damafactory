@@ -25,6 +25,13 @@ class DBRolesController extends Controller
         $grid->add('id', '#');
         $grid->add('name', 'Name', true);
         $grid->add('http_permission', 'HTTP Permission', true);
+        $grid->add('active', 'Active', true)->cell(function ($value) {
+            if ($value) {
+                return __('Yes');
+            }
+
+            return __('No');
+        });
         $grid->add('created_at', 'Created at', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);

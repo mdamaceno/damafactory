@@ -4,6 +4,7 @@ namespace App\Http\Requests\API;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Services\Permission;
+use App\User;
 
 class BaseRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class BaseRequest extends FormRequest
      */
     public function authorize()
     {
-        $user = auth()->user();
+        $user = User::find(auth()->user()->id);
         $permission = new Permission;
 
         return $permission->authorize($user);

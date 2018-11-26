@@ -15,21 +15,25 @@
     </div>
 </div>
 <div class="form-group row">
+    @if (auth()->user()->role === 'master')
     <div class="col-lg-4">
         {!! $form->render('role') !!}
         @include('admin.partials.input_error', ['name' => 'role'])
     </div>
+    @endif
     <div class="col-lg-4">
         @include('admin.partials.password_field', ['field' => 'password'])
         @include('admin.partials.input_error', ['name' => 'password'])
     </div>
 </div>
+@if (auth()->user()->role === 'master')
 <div class="form-group row" id="el__db-permission">
     <div class="col-lg-4">
         {!! $form->render('db_permission') !!}
         @include('admin.partials.input_error', ['name' => 'db_permission'])
     </div>
 </div>
+@endif
 {!! $form->footer !!}
 
 @section('scripts')

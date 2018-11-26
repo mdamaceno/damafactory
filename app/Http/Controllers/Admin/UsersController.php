@@ -40,7 +40,13 @@ class UsersController extends Controller
         $model = new User();
 
         $form = $this->buildForm($model, __('New user'));
-        $form->saved(function () use ($form) {
+        $form->saved(function () use ($form, $model) {
+            if (!$model->dbRoles()->count()) {
+                \DB::table('db_roles_users')->insert([
+                    'user_id' => $model->id,
+                    'db_role_id' => 1,
+                ]);
+            }
             alert()->success(__('Record created successfully'));
             return redirect('/admin/users/new');
         });
@@ -96,20 +102,22 @@ class UsersController extends Controller
         }
 
         $form->add('email', 'Email', 'text');
-        $form->add('role', 'Role', 'select')->options([
-            'db' => 'db',
-            'master' => 'master',
-        ]);
+
+        if (auth()->user()->role === 'master') {
+            $form->add('role', 'Role', 'select')->options([
+                'db' => 'db',
+                'master' => 'master',
+            ]);
+
+            $permissions = DBRole::pluck('name', 'id');
+
+            $form->add('db_permission', 'Database Permission', 'select')
+                 ->options($permissions)
+                 ->updateValue(@$model->dbRoles()->first()->id);
+        }
+
         $form->add('name', 'Name', 'text');
         $form->add('password', 'Password', 'text');
-
-        $permissions = DBRole::pluck('name', 'id');
-
-        $form->add('db_permission', 'Database Permission', 'select')
-             ->options($permissions);
-        if ($model->role !== 'master') {
-            $form->updateValue($model->dbRoles()->first()->id);
-        }
 
         $form->submit('Save');
 

@@ -38,6 +38,7 @@
               </span>
             </a>
           </li>
+          @if (auth()->user()->role === 'master')
           <li class="nav-item">
             <a href="{{ url('/admin/permissions') }}" class="nav-link text-grey-300 active">
               <i class="icon-people"></i>
@@ -62,6 +63,7 @@
               </span>
             </a>
           </li>
+          @endif
           <!-- /main -->
 
         </ul>

@@ -26,7 +26,7 @@ class PostRequest extends BaseRequest
             return [
                 'name' => 'required|max:50|unique:db_roles,name',
                 'http_permission' => 'nullable',
-                'active' => 'required|boolean',
+                'active' => 'boolean',
             ];
         }
 

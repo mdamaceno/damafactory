@@ -10,11 +10,13 @@ class Permission
             return true;
         }
 
-        if (is_null($user->dbToken)) {
+        $permission = @$user->dbRoles()->first()->http_permission;
+
+        if (!$permission) {
             return false;
         }
 
-        $httpPermissions = explode(',', strtoupper($user->dbToken->http_permission));
+        $httpPermissions = explode('|', strtoupper($permission));
 
         if (in_array(request()->getMethod(), $httpPermissions) && $user->role !== $master) {
             return true;
