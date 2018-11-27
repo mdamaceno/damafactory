@@ -11,4 +11,17 @@ class AuthToken extends Model
         'user_id',
         'token',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeFreesearch($query, $value)
+    {
+        return $query->whereHas('user', function ($q) use ($value) {
+            $q->whereRaw("name like ?", array("%".$value."%"))
+              ->orWhereRaw("email like ?", array("%".$value."%"));
+        });
+    }
 }

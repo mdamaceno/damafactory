@@ -15,7 +15,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role',
+        'name',
+        'email',
+        'password',
+        'role',
+        'db_permission',
     ];
 
     /**
@@ -27,13 +31,36 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function scopeFreesearch($query, $value)
+    {
+        return $query->whereRaw('name like ?', ['%' . $value . '%'])
+                     ->orWhereRaw('email like ?', ['%' . $value . '%']);
+    }
+
     public function authTokens()
     {
         return $this->hasMany(AuthToken::class);
     }
 
-    public function dbToken()
+    public function dbRoles()
     {
-        return $this->hasOne(DBToken::class);
+        return $this->belongsToMany(DBRole::class, 'db_roles_users', 'user_id', 'db_role_id');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->password = bcrypt($user->password);
+        });
+
+        static::updating(function ($user) {
+            if (!is_null($user->password) && trim($user->password) !== '') {
+                $user->password = bcrypt($user->password);
+            } else {
+                unset($user->password);
+            }
+        });
     }
 }
