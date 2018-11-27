@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Alert;
 use App\Dbs;
+use App\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Database\PostRequest;
 use App\Support\Helpers;
@@ -12,7 +13,11 @@ class DatabasesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        if (!User::count()) {
+            $this->middleware('install');
+        } else {
+            $this->middleware('auth');
+        }
     }
 
     public function index()

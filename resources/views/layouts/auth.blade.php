@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="{{ mix('assets/admin/css/app.css') }}">
   </head>
-  <body class="bg-teal-300">
+  <body class="bg-purple-800">
     <div id="app">
         <div class="page-content">
             <div class="content-wrapper">
@@ -22,6 +22,7 @@
     <script src="{{ mix('assets/admin/js/manifest.js') }}"></script>
     <script src="{{ mix('assets/admin/js/vendor.js') }}"></script>
     <script src="{{ mix('assets/admin/js/core.js') }}"></script>
+    @include('sweet::alert')
     @yield('scripts')
   </body>
 </html>
