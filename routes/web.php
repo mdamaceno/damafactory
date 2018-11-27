@@ -27,6 +27,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::match(['get', 'post'], '/permissions/new', 'DBRolesController@create');
 
     Route::get('/auth-tokens', 'AuthTokensController@index');
+
+    Route::get('/helps', 'HelpsController@index');
 });
 
 // Authentication Routes...

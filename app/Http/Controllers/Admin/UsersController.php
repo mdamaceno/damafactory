@@ -62,6 +62,11 @@ class UsersController extends Controller
         if (request()->has('delete')) {
             $model = User::find(request()->get('delete'));
 
+            if (auth()->user()->id === $model->id) {
+                alert()->error(__('You cannot delete yourself!'));
+                return redirect('admin/users');
+            }
+
             if ($model->delete()) {
                 alert()->success(__('Record deleted successfully'));
                 return redirect('admin/users');

@@ -64,6 +64,14 @@
             </a>
           </li>
           @endif
+          <li class="nav-item">
+            <a href="{{ url('/admin/help') }}" class="nav-link text-grey-300 active">
+              <i class="icon-help"></i>
+              <span>
+                {{ __('Help') }}
+              </span>
+            </a>
+          </li>
           <!-- /main -->
 
         </ul>
