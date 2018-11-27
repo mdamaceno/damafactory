@@ -72,9 +72,7 @@ class DatabasesTest extends TestCase
             'database' => 'abc',
         ]);
 
-        factory(\App\DBToken::class)->create([
-            'user_id' => $user->id,
-            'dbs_id' => $db->id,
+        factory(\App\DBRole::class)->create([
             'http_permission' => 'get',
         ]);
 
@@ -272,9 +270,7 @@ class DatabasesTest extends TestCase
         $db = factory(\App\Dbs::class)->create();
         $user = factory(\App\User::class)->create(['role' => 'db']);
 
-        $dbToken = factory(\App\DBToken::class)->create([
-            'user_id' => $user->id,
-            'dbs_id' => $db->id,
+        $dbToken = factory(\App\DBRole::class)->create([
             'http_permission' => 'post',
         ]);
 

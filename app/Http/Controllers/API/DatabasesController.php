@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Dbs;
 use App\Exceptions\DatabaseException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\API\GenericRequest;
 use App\Http\Requests\API\DeleteDatabaseRequest;
 use App\Http\Requests\API\GetDatabaseRequest;
 use App\Http\Requests\API\InsertDatabaseRequest;
@@ -26,7 +27,7 @@ class DatabasesController extends Controller
         $this->response = new ResponseBuilder();
     }
 
-    public function getManyData($dbName, $tableName)
+    public function getManyData(GenericRequest $request, $dbName, $tableName)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -46,7 +47,7 @@ class DatabasesController extends Controller
                     ->json();
     }
 
-    public function getSingleData($dbName, $tableName, $id)
+    public function getSingleData(GenericRequest $request, $dbName, $tableName, $id)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -62,7 +63,7 @@ class DatabasesController extends Controller
                     ->json();
     }
 
-    public function postData($dbName, $tableName)
+    public function postData(GenericRequest $request, $dbName, $tableName)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -104,7 +105,7 @@ class DatabasesController extends Controller
         throw new DatabaseException('insert');
     }
 
-    public function updateData($dbName, $tableName, $id)
+    public function updateData(GenericRequest $request, $dbName, $tableName, $id)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -132,7 +133,7 @@ class DatabasesController extends Controller
         throw new DatabaseException('update');
     }
 
-    public function updateFilteringData($dbName, $tableName)
+    public function updateFilteringData(GenericRequest $request, $dbName, $tableName)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -179,7 +180,7 @@ class DatabasesController extends Controller
                     ->json();
     }
 
-    public function deleteData($dbName, $tableName, $id)
+    public function deleteData(GenericRequest $request, $dbName, $tableName, $id)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 
@@ -207,7 +208,7 @@ class DatabasesController extends Controller
         throw new DatabaseException('delete');
     }
 
-    public function deleteFilteringData($dbName, $tableName)
+    public function deleteFilteringData(GenericRequest $request, $dbName, $tableName)
     {
         $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
 

@@ -65,7 +65,7 @@
         </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
+        <div id="app" class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
@@ -78,6 +78,7 @@
             @endif
 
             <div class="content">
+                <example-component></example-component>
                 <div class="title m-b-md">
                     Laravel
                 </div>
@@ -91,5 +92,6 @@
                 </div>
             </div>
         </div>
+        <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
