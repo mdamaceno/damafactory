@@ -3,8 +3,6 @@
 namespace App\Support;
 
 use Illuminate\Http\Request;
-use App\Support\Firebird;
-use App\Support\MySQL;
 use App\Exceptions\NoPrimaryKeyException;
 use App\Exceptions\ManyPrimaryKeysException;
 use App\Exceptions\NotFoundException;
@@ -60,6 +58,7 @@ class ResultBuilder
 
         return $query;
     }
+
     public function buildSingle(Request $request, $query, $tableName, $id)
     {
         if ($request->has('fields')) {
@@ -158,7 +157,7 @@ class ResultBuilder
     public function buildFilteringUpdate(Request $request, $query, $tableName)
     {
         if (!$request->has('filter')) {
-            throw new \Exception("Error Processing Request");
+            throw new \Exception('Error Processing Request');
         }
 
         $arr = [
@@ -222,7 +221,7 @@ class ResultBuilder
     public function buildFilteringDelete(Request $request, $query, $tableName)
     {
         if (!$request->has('filter')) {
-            throw new \Exception("Error Processing Request");
+            throw new \Exception('Error Processing Request');
         }
 
         $arr = [

@@ -87,7 +87,7 @@ class DatabasesController extends Controller
             }
 
             $columnId = array_keys($id)[0];
-            $query = $dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
+            $query = $this->dbRepository->getQuery($tableName, $dbName, request()->header('Database-Token'));
             $lastInsert = $query
                 ->where($columnId, $id[$columnId])
                 ->first();
