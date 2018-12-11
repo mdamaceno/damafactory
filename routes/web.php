@@ -10,29 +10,30 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::group(['prefix' => '{locale}'], function () {
+    Route::group([
+        'prefix' => 'admin',
+        'namespace' => 'Admin',
+        'middleware' => ['install'],
+    ], function () {
+        Route::get('/', 'DatabasesController@index');
 
-Route::group([
-    'prefix' => 'admin',
-    'namespace' => 'Admin',
-    'middleware' => ['install'],
-], function () {
-    Route::get('/', 'DatabasesController@index');
+        Route::get('/databases', 'DatabasesController@index');
+        Route::match(['get', 'post'], '/databases/edit', 'DatabasesController@edit');
+        Route::match(['get', 'post'], '/databases/new', 'DatabasesController@create');
 
-    Route::get('/databases', 'DatabasesController@index');
-    Route::match(['get', 'post'], '/databases/edit', 'DatabasesController@edit');
-    Route::match(['get', 'post'], '/databases/new', 'DatabasesController@create');
+        Route::get('/users', 'UsersController@index');
+        Route::match(['get', 'post'], '/users/edit', 'UsersController@edit');
+        Route::match(['get', 'post'], '/users/new', 'UsersController@create');
 
-    Route::get('/users', 'UsersController@index');
-    Route::match(['get', 'post'], '/users/edit', 'UsersController@edit');
-    Route::match(['get', 'post'], '/users/new', 'UsersController@create');
+        Route::get('/permissions', 'DBRolesController@index');
+        Route::match(['get', 'post'], '/permissions/edit', 'DBRolesController@edit');
+        Route::match(['get', 'post'], '/permissions/new', 'DBRolesController@create');
 
-    Route::get('/permissions', 'DBRolesController@index');
-    Route::match(['get', 'post'], '/permissions/edit', 'DBRolesController@edit');
-    Route::match(['get', 'post'], '/permissions/new', 'DBRolesController@create');
+        Route::get('/auth-tokens', 'AuthTokensController@index');
 
-    Route::get('/auth-tokens', 'AuthTokensController@index');
-
-    Route::get('/help', 'HelpsController@index');
+        Route::get('/help', 'HelpsController@index');
+    });
 });
 
 Route::group(['middleware' => ['install']], function () {

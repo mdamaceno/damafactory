@@ -11,6 +11,9 @@ use App\Support\Helpers;
 
 class DatabasesController extends Controller
 {
+    private $locale;
+    private $links;
+
     public function __construct()
     {
         if (!User::count()) {
@@ -18,6 +21,14 @@ class DatabasesController extends Controller
         } else {
             $this->middleware('auth');
         }
+
+        $this->locale = '/' . locale()->current();
+
+        $this->links = [
+            'index_database' => $this->locale . '/admin/databases',
+            'new_database' => $this->locale . '/admin/databases/new',
+            'edit_database' => $this->locale . '/admin/databases/edit',
+        ];
     }
 
     public function index()
@@ -37,9 +48,13 @@ class DatabasesController extends Controller
         $grid->add('username', 'Username', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
-        $grid->edit('/admin/databases/edit', null, 'modify|delete');
+        $grid->edit($this->links['edit_database'], null, 'modify|delete');
 
-        return view('admin.databases.index', compact('grid', 'filter'));
+        return view('admin.databases.index', [
+            'grid' => $grid,
+            'filter' => $filter,
+            'links' => $this->links,
+        ]);
     }
 
     public function create(PostRequest $request)
@@ -49,12 +64,15 @@ class DatabasesController extends Controller
         $form = $this->buildForm($db, __('New database'));
         $form->saved(function () use ($form) {
             alert()->success(__('Record created successfully'));
-            return redirect('/admin/databases/new');
+            return redirect($this->links['new_database']);
         });
 
         $form->build();
 
-        return $form->view('admin.databases.create', compact('form'));
+        return $form->view('admin.databases.create', [
+            'form' => $form,
+            'links' => $this->links,
+        ]);
     }
 
     public function edit(PostRequest $request)
@@ -64,11 +82,11 @@ class DatabasesController extends Controller
 
             if ($db->delete()) {
                 alert()->success(__('Record deleted successfully'));
-                return redirect('admin/databases');
+                return redirect($this->links['index_database']);
             }
 
             alert()->error(__('Record not deleted'));
-            return redirect('admin/databases');
+            return redirect($this->links['index_database']);
         }
 
         $db = Dbs::find(request()->get('modify'));
@@ -81,11 +99,11 @@ class DatabasesController extends Controller
 
         $form->saved(function () use ($db) {
             alert()->success(__('Record updated successfully'));
-            return redirect('admin/databases/edit?modify=' . $db->id);
+            return redirect($this->links['edit_database'] . '?modify=' . $db->id);
         });
         $form->build();
 
-        return $form->view('admin.databases.edit', compact('form'));
+        return $form->view('admin.databases.edit', ['form' => $form, 'links' => $this->links]);
     }
 
     private function buildForm($model, $label = null)
