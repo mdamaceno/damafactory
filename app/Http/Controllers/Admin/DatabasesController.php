@@ -5,24 +5,22 @@ namespace App\Http\Controllers\Admin;
 use Alert;
 use App\Dbs;
 use App\User;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Database\PostRequest;
 use App\Support\Helpers;
 
-class DatabasesController extends Controller
+class DatabasesController extends BaseController
 {
-    private $locale;
     private $links;
 
     public function __construct()
     {
+        parent::__construct();
+
         if (!User::count()) {
             $this->middleware('install');
         } else {
             $this->middleware('auth');
         }
-
-        $this->locale = '/' . locale()->current();
 
         $this->links = [
             'index_database' => $this->locale . '/admin/databases',

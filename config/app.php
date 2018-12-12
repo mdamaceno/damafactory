@@ -138,10 +138,12 @@ return [
         'en' => [
             'name' => 'English',
             'dir' => 'ltr',
+            'flag' => '/assets/admin/images/usa.png',
         ],
         'pt' => [
             'name' => 'Portuguese',
-            'dir' => 'ltr'
+            'dir' => 'ltr',
+            'flag' => '/assets/admin/images/brazil.png',
         ],
     ],
 

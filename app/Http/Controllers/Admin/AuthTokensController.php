@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\AuthToken;
 
-class AuthTokensController extends Controller
+class AuthTokensController extends BaseController
 {
     public function __construct()
     {
+        parent::__construct();
+
         $this->middleware('auth');
         $this->middleware('view.permission');
     }

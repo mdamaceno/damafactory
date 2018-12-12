@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DBRole;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\PostRequest;
 use App\User;
 
-class UsersController extends Controller
+class UsersController extends BaseController
 {
     public function __construct()
     {
+        parent::__construct();
+
         $this->middleware('auth');
         $this->middleware('view.permission');
     }

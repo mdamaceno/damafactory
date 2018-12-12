@@ -23,7 +23,7 @@
         <ul class="nav nav-sidebar" data-nav-type="accordion">
 
           <li class="nav-item">
-            <a href="{{ url('/admin') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin") }}" class="nav-link text-grey-300 active">
               <i class="icon-home4"></i>
               <span>
                 {{ __('Dashboard') }}
@@ -31,7 +31,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/databases') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin/databases") }}" class="nav-link text-grey-300 active">
               <i class="icon-stack"></i>
               <span>
                 {{ __('Databases') }}
@@ -40,7 +40,7 @@
           </li>
           @if (auth()->user()->role === 'master')
           <li class="nav-item">
-            <a href="{{ url('/admin/permissions') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin/permissions") }}" class="nav-link text-grey-300 active">
               <i class="icon-people"></i>
               <span>
                 {{ __('Permissions') }}
@@ -48,7 +48,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/users') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin/users") }}" class="nav-link text-grey-300 active">
               <i class="icon-users"></i>
               <span>
                 {{ __('Users') }}
@@ -56,16 +56,16 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/admin/auth-tokens') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin/auth-tokens") }}" class="nav-link text-grey-300 active">
               <i class="icon-key"></i>
               <span>
-                {{ __('Auth Tokens') }}
+                {{ __('Auth tokens') }}
               </span>
             </a>
           </li>
           @endif
           <li class="nav-item">
-            <a href="{{ url('/admin/help') }}" class="nav-link text-grey-300 active">
+            <a href="{{ url("$locale/admin/help") }}" class="nav-link text-grey-300 active">
               <i class="icon-help"></i>
               <span>
                 {{ __('Help') }}
