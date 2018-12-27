@@ -8,12 +8,20 @@ use App\User;
 
 class UsersController extends BaseController
 {
+    private $links;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->middleware('auth');
         $this->middleware('view.permission');
+
+        $this->links = [
+            'index_users' => $this->locale . '/admin/users',
+            'new_users' => $this->locale . '/admin/users/new',
+            'edit_users' => $this->locale . '/admin/users/edit',
+        ];
     }
 
     public function index()
@@ -32,9 +40,13 @@ class UsersController extends BaseController
         $grid->add('created_at', 'Created at', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
-        $grid->edit('/admin/users/edit', null, 'modify|delete');
+        $grid->edit($this->links['edit_users'], null, 'modify|delete');
 
-        return view('admin.users.index', compact('grid', 'filter'));
+        return view('admin.users.index', [
+            'grid' => $grid,
+            'filter' => $filter,
+            'links' => $this->links,
+        ]);
     }
 
     public function create(PostRequest $request)
@@ -50,12 +62,15 @@ class UsersController extends BaseController
                 ]);
             }
             alert()->success(__('Record created successfully'));
-            return redirect('/admin/users/new');
+            return redirect($this->links['new_users']);
         });
 
         $form->build();
 
-        return $form->view('admin.users.create', compact('form'));
+        return $form->view('admin.users.create', [
+            'form' => $form,
+            'links' => $this->links,
+        ]);
     }
 
     public function edit(PostRequest $request)
@@ -65,16 +80,16 @@ class UsersController extends BaseController
 
             if (auth()->user()->id === $model->id) {
                 alert()->error(__('You cannot delete yourself!'));
-                return redirect('admin/users');
+                return redirect($this->links['index_users']);
             }
 
             if ($model->delete()) {
                 alert()->success(__('Record deleted successfully'));
-                return redirect('admin/users');
+                return redirect($this->links['index_users']);
             }
 
             alert()->error(__('Record not deleted'));
-            return redirect('admin/users');
+            return redirect($this->links['index_users']);
         }
 
         $model = User::find(request()->get('modify'));
@@ -93,11 +108,14 @@ class UsersController extends BaseController
             }
 
             alert()->success(__('Record updated successfully'));
-            return redirect('admin/users/edit?modify=' . $model->id);
+            return redirect($this->links['edit_permissions'] . '?modify=' . $model->id);
         });
         $form->build();
 
-        return $form->view('admin.users.edit', compact('form'));
+        return $form->view('admin.users.create', [
+            'form' => $form,
+            'links' => $this->links,
+        ]);
     }
 
     private function buildForm($model, $label = null)
