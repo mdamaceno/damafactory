@@ -126,6 +126,29 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Supported Application Locales
+    |--------------------------------------------------------------------------
+    |
+    | Our supported locales will have available frontend and model
+    | translations.
+    |
+    */
+
+    'supported_locales' => [
+        'en' => [
+            'name' => 'English',
+            'dir' => 'ltr',
+            'flag' => '/assets/admin/images/usa.png',
+        ],
+        'pt' => [
+            'name' => 'Portuguese',
+            'dir' => 'ltr',
+            'flag' => '/assets/admin/images/brazil.png',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
@@ -176,6 +199,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\LocaleServiceProvider::class,
     ],
 
     /*

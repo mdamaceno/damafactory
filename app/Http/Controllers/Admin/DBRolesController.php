@@ -3,15 +3,24 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DBRole;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\DBRole\PostRequest;
 
-class DBRolesController extends Controller
+class DBRolesController extends BaseController
 {
+    private $links;
+
     public function __construct()
     {
+        parent::__construct();
+
         $this->middleware('auth');
         $this->middleware('view.permission');
+
+        $this->links = [
+            'index_permissions' => $this->locale . '/admin/permissions',
+            'new_permissions' => $this->locale . '/admin/permissions/new',
+            'edit_permissions' => $this->locale . '/admin/permissions/edit',
+        ];
     }
 
     public function index()
@@ -36,9 +45,13 @@ class DBRolesController extends Controller
         $grid->add('created_at', 'Created at', true);
         $grid->orderBy('id', 'asc');
         $grid->paginate(10);
-        $grid->edit('/admin/permissions/edit', null, 'modify|delete');
+        $grid->edit($this->links['edit_permissions'], null, 'modify|delete');
 
-        return view('admin.permissions.index', compact('grid', 'filter'));
+        return view('admin.permissions.index', [
+            'grid' => $grid,
+            'filter' => $filter,
+            'links' => $this->links,
+        ]);
     }
 
     public function create(PostRequest $request)
@@ -48,12 +61,15 @@ class DBRolesController extends Controller
         $form = $this->buildForm($model, __('New permission'));
         $form->saved(function () use ($form) {
             alert()->success(__('Record created successfully'));
-            return redirect('/admin/permissions/new');
+            return redirect($this->links['new_permissions']);
         });
 
         $form->build();
 
-        return $form->view('admin.permissions.create', compact('form'));
+        return $form->view('admin.permissions.create', [
+            'form' => $form,
+            'links' => $this->links,
+        ]);
     }
 
     public function edit(PostRequest $request)
@@ -63,11 +79,11 @@ class DBRolesController extends Controller
 
             if ($model->delete()) {
                 alert()->success(__('Record deleted successfully'));
-                return redirect('admin/permissions');
+                return redirect($this->links['index_permissions']);
             }
 
             alert()->error(__('Record not deleted'));
-            return redirect('admin/permissions');
+            return redirect($this->links['index_permissions']);
         }
 
         $model = DBRole::find(request()->get('modify'));
@@ -75,11 +91,14 @@ class DBRolesController extends Controller
         $form = $this->buildForm($model, __('Edit permission'));
         $form->saved(function () use ($model, $request) {
             alert()->success(__('Record updated successfully'));
-            return redirect('admin/permissions/edit?modify=' . $model->id);
+            return redirect($this->links['edit_permissions'] . '?modify=' . $model->id);
         });
         $form->build();
 
-        return $form->view('admin.permissions.edit', compact('form'));
+        return $form->view('admin.permissions.create', [
+            'form' => $form,
+            'links' => $this->links,
+        ]);
     }
 
     private function buildForm($model, $label = null)

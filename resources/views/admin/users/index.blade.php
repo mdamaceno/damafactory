@@ -9,8 +9,8 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <a href="{{ url('/admin/users/new') }}" class="btn btn-sm btn-primary">{{__('New user')}}</a>
-            @include('admin.partials.search_table', ['filter' => $filter, 'url' => '/admin/users'])
+            <a href="{{ url($links['new_users']) }}" class="btn btn-sm btn-primary">{{__('New user')}}</a>
+            @include('admin.partials.search_table', ['filter' => $filter, 'url' => $links['index_users']])
             {!! $grid !!}
         </div>
     </div>

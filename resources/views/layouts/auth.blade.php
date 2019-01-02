@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ locale()->current() }}" dir="{{ locale()->dir() }}">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
