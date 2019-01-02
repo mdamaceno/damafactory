@@ -2,9 +2,9 @@
 
 @section('content')
 	<div class="card">
-        @include('admin.partials.card_title', ['title' => __('Auth Tokens')])
+        @include('admin.partials.card_title', ['title' => __('Auth tokens')])
         <div class="card-body">
-            @include('admin.partials.search_table', ['filter' => $filter, 'url' => '/admin/auth-tokens'])
+            @include('admin.partials.search_table', ['filter' => $filter, 'url' => "$locale/admin/auth-tokens"])
             {!! $grid !!}
         </div>
     </div>

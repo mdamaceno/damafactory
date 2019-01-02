@@ -28,14 +28,35 @@
       </span>
 
       <ul class="navbar-nav">
-        <li class="nav-item">
-            <a href="javascript:void(0)" class="btn text-grey-300">{{ auth()->user()->email }}</i></a>
+        <li class="nav-item dropdown">
+            <a href="#" class="navbar-nav-link dropdown-toggle caret-0" data-toggle="dropdown">
+                <img src="{{ config('app.supported_locales')[locale()->current()]['flag'] }}" alt="">
+                <span class="d-md-none ml-2">Language</span>
+            </a>
+            <div class="dropdown-menu dropdown-content wmin-md-350">
+                <div class="dropdown-content-body dropdown-scrollable">
+                    <ul class="media-list">
+                        @foreach (config('app.supported_locales') as $key => $lang)
+                        <li class="media">
+                            <div class="media-body">
+                                <a href="{{ url("$key/admin") }}">
+                                    <img src="{{ config("app.supported_locales.$key.flag") }}" alt=""> {{ __(config("app.supported_locales.$key.name")) }}
+                                </a>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </li>
-        <li class="nav-item">
-            <a href="{{ url('/admin/users/edit?modify=' . auth()->user()->id) }}" class="btn text-grey-300"><i class="icon-cog"></i></a>
+        <li class="nav-item dropdown">
+            <a href="javascript:void(0)" class="navbar-nav-link btn text-grey-300">{{ auth()->user()->email }}</i></a>
         </li>
-        <li class="nav-item">
-            <a href="{{ url('/logout') }}" class="btn text-danger"><i class="icon-switch2"></i></a>
+        <li class="nav-item dropdown">
+            <a href="{{ url(locale()->current() . '/admin/users/edit?modify=' . auth()->user()->id) }}" class="navbar-nav-link btn text-grey-300"><i class="icon-cog"></i></a>
+        </li>
+        <li class="nav-item dropdown">
+            <a href="{{ url('/logout') }}" class="navbar-nav-link btn text-danger"><i class="icon-switch2"></i></a>
         </li>
       </ul>
     </div>

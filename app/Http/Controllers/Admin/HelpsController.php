@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-
-class HelpsController extends Controller
+class HelpsController extends BaseController
 {
     public function __construct()
     {
+        parent::__construct();
+
         $this->middleware('auth');
     }
 
